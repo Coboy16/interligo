@@ -30,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckStatusRequested event,
     Emitter<AuthState> emit,
   ) async {
+    emit(const AuthLoading());
     final result = await checkAuthStatusUseCase();
 
     result.fold(
