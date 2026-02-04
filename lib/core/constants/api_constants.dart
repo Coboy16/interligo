@@ -1,10 +1,13 @@
 class ApiConstants {
   ApiConstants._();
 
-  static const String baseUrl = 'http://localhost:3000/api';
+  static const String baseUrl = 'https://interligo-api.onrender.com/api/v1';
 
   // Auth
   static const String authToken = '/auth/oidc/token';
+  static const String authRefresh = '/auth/oidc/refresh';
+  static const String authLogout = '/auth/logout';
+  static const String authMe = '/auth/me';
 
   // Accounts
   static const String accounts = '/accounts';

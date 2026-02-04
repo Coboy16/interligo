@@ -14,6 +14,12 @@ import '../../features/auth/domain/repositories/repositories.dart';
 import '../../features/auth/domain/usecases/usecases.dart';
 import '../../features/auth/presentation/bloc/bloc.dart';
 
+// User Feature
+import '../../features/user/data/repositories/repositories.dart';
+import '../../features/user/domain/repositories/repositories.dart';
+import '../../features/user/domain/usecases/usecases.dart';
+import '../../features/user/presentation/bloc/bloc.dart';
+
 // Accounts Feature
 import '../../features/accounts/data/datasources/datasources.dart';
 import '../../features/accounts/data/repositories/repositories.dart';
@@ -91,6 +97,22 @@ Future<void> initializeDependencies() async {
       logoutUseCase: sl(),
       checkAuthStatusUseCase: sl(),
     ),
+  );
+
+  // ==========================================================================
+  // USER FEATURE
+  // ==========================================================================
+  // Repository
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(sl()),
+  );
+
+  // UseCases
+  sl.registerLazySingleton(() => GetCurrentUserUseCase(sl()));
+
+  // BLoC - Singleton for user to maintain state across app
+  sl.registerLazySingleton(
+    () => UserBloc(getCurrentUserUseCase: sl()),
   );
 
   // ==========================================================================

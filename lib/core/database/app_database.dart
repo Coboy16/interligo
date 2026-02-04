@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+import '../utils/logger_util.dart';
 import 'tables/accounts_table.dart';
 import 'tables/cards_table.dart';
 import 'tables/transactions_table.dart';
@@ -15,7 +16,6 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
-  // For testing
   AppDatabase.forTesting(super.e);
 
   @override
@@ -31,11 +31,15 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> insertAccounts(List<AccountsTableCompanion> accounts) async {
     await batch((batch) {
+      LoggerUtil.logDatabaseEvent('Accounts', 'INSERT_BATCH', data: accounts);
       batch.insertAllOnConflictUpdate(accountsTable, accounts);
     });
   }
 
-  Future<void> clearAccounts() => delete(accountsTable).go();
+  Future<void> clearAccounts() {
+    LoggerUtil.logDatabaseEvent('Accounts', 'DELETE_ALL');
+    return delete(accountsTable).go();
+  }
 
   // ========== TRANSACTIONS ==========
   Future<List<TransactionsTableData>> getTransactionsByAccountId(
@@ -50,13 +54,25 @@ class AppDatabase extends _$AppDatabase {
     List<TransactionsTableCompanion> transactions,
   ) async {
     await batch((batch) {
+      LoggerUtil.logDatabaseEvent(
+        'Transactions',
+        'INSERT_BATCH',
+        data: transactions,
+      );
       batch.insertAllOnConflictUpdate(transactionsTable, transactions);
     });
   }
 
-  Future<void> clearTransactionsByAccountId(String accountId) => (delete(
-    transactionsTable,
-  )..where((t) => t.accountId.equals(accountId))).go();
+  Future<void> clearTransactionsByAccountId(String accountId) {
+    LoggerUtil.logDatabaseEvent(
+      'Transactions',
+      'DELETE_BY_ACCOUNT',
+      data: {'accountId': accountId},
+    );
+    return (delete(
+      transactionsTable,
+    )..where((t) => t.accountId.equals(accountId))).go();
+  }
 
   // ========== CARDS ==========
   Future<List<CardsTableData>> getAllCards() => select(cardsTable).get();
@@ -67,19 +83,30 @@ class AppDatabase extends _$AppDatabase {
 
   Future<void> insertCards(List<CardsTableCompanion> cards) async {
     await batch((batch) {
+      LoggerUtil.logDatabaseEvent('Cards', 'INSERT_BATCH', data: cards);
       batch.insertAllOnConflictUpdate(cardsTable, cards);
     });
   }
 
-  Future<void> updateCardStatus(String cardId, String status) =>
-      (update(cardsTable)..where((t) => t.cardId.equals(cardId))).write(
-        CardsTableCompanion(status: Value(status)),
-      );
+  Future<void> updateCardStatus(String cardId, String status) {
+    LoggerUtil.logDatabaseEvent(
+      'Cards',
+      'UPDATE_STATUS',
+      data: {'cardId': cardId, 'status': status},
+    );
+    return (update(cardsTable)..where((t) => t.cardId.equals(cardId))).write(
+      CardsTableCompanion(status: Value(status)),
+    );
+  }
 
-  Future<void> clearCards() => delete(cardsTable).go();
+  Future<void> clearCards() {
+    LoggerUtil.logDatabaseEvent('Cards', 'DELETE_ALL');
+    return delete(cardsTable).go();
+  }
 
   // ========== CLEAR ALL ==========
   Future<void> clearAllData() async {
+    LoggerUtil.logDatabaseEvent('DATABASE', 'CLEAR_ALL_DATA');
     await clearAccounts();
     await delete(transactionsTable).go();
     await clearCards();
