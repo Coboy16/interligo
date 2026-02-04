@@ -1,0 +1,11 @@
+{
+  "/api/auth/oidc/token": "/auth/oidc/token",
+  "/api/accounts": "/accounts",
+  "/api/accounts/:id": "/accounts/:id",
+  "/api/accounts/:id/transactions": "/transactions?accountId=:id",
+  "/api/beneficiaries": "/beneficiaries",
+  "/api/transfers": "/transfers",
+  "/api/transfers/:id/confirm": "/transfers/:id",
+  "/api/cards": "/cards",
+  "/api/cards/:id": "/cards/:id"
+}
