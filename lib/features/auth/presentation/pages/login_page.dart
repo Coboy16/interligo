@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +23,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool _obscurePassword = true;
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
+  }
 
   void _onLogin() {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
@@ -49,187 +61,281 @@ class _LoginPageState extends State<LoginPage> {
         final isLoading = state is AuthLoading;
 
         return Scaffold(
+          backgroundColor: AppColors.background,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(height: 60.h),
-                  // Logo
-                  Center(
-                    child: Container(
-                      width: 80.w,
-                      height: 80.w,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: Icon(
-                        Icons.account_balance,
-                        size: 44.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  // Title
-                  Text(
-                    'Bienvenido',
-                    style: AppTypography.displayMedium.copyWith(
-                      color: AppColors.textPrimary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Inicia sesión para continuar',
-                    style: AppTypography.bodyLarge.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 48.h),
-                  // Form
-                  FormBuilder(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        FormBuilderTextField(
-                          name: 'email',
-                          decoration: InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: const Icon(LucideIcons.mail),
-                            hintText: 'ejemplo@correo.com',
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'El correo es requerido',
-                            ),
-                            FormBuilderValidators.email(
-                              errorText: 'Ingresa un correo válido',
-                            ),
-                          ]),
-                        ),
-                        SizedBox(height: 20.h),
-                        FormBuilderTextField(
-                          name: 'password',
-                          decoration: InputDecoration(
-                            labelText: 'Contraseña',
-                            prefixIcon: const Icon(LucideIcons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? LucideIcons.eyeOff
-                                    : LucideIcons.eye,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscurePassword = !_obscurePassword;
-                                });
-                              },
-                            ),
-                          ),
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (_) => _onLogin(),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(
-                              errorText: 'La contraseña es requerida',
-                            ),
-                            FormBuilderValidators.minLength(
-                              6,
-                              errorText: 'Mínimo 6 caracteres',
-                            ),
-                          ]),
-                        ),
-                        SizedBox(height: 12.h),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: TextButton(
-                            onPressed: () {
-                              // TODO: Implement forgot password
-                            },
-                            child: Text(
-                              'Olvidé mi contraseña',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 32.h),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 52.h,
-                          child: ElevatedButton(
-                            onPressed: isLoading ? null : _onLogin,
-                            child: isLoading
-                                ? SizedBox(
-                                    width: 24.w,
-                                    height: 24.w,
-                                    child: const CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white,
-                                      ),
-                                    ),
-                                  )
-                                : const Text('Iniciar sesión'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  // Demo credentials hint
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.info.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12.r),
-                      border: Border.all(
-                        color: AppColors.info.withValues(alpha: 0.3),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              LucideIcons.info,
-                              size: 18.sp,
-                              color: AppColors.info,
-                            ),
-                            SizedBox(width: 8.w),
-                            Text(
-                              'Credenciales de prueba',
-                              style: AppTypography.labelLarge.copyWith(
-                                color: AppColors.info,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 8.h),
-                        Text(
-                          'Email: demo@interligo.com\nPassword: demo123',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                ],
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: 48.h),
+                    // Header con logo
+                    _buildHeader(),
+                    SizedBox(height: 48.h),
+                    // Formulario
+                    _buildForm(isLoading),
+                    SizedBox(height: 32.h),
+                    // Info de credenciales
+                    _buildDemoCredentials(),
+                    SizedBox(height: 32.h),
+                  ],
+                ),
               ),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        // Logo minimalista
+        Container(
+          width: 88.w,
+          height: 88.w,
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(24.r),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Icon(
+            Icons.account_balance_rounded,
+            size: 44.sp,
+            color: Colors.white,
+          ),
+        ),
+        SizedBox(height: 32.h),
+        // Título
+        Text(
+          'Bienvenido',
+          style: AppTypography.displayMedium.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        Text(
+          'Inicia sesión para continuar',
+          style: AppTypography.bodyLarge.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildForm(bool isLoading) {
+    return Container(
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(24.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: FormBuilder(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Campo de email
+            Text(
+              'Correo electrónico',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            FormBuilderTextField(
+              name: 'email',
+              decoration: InputDecoration(
+                hintText: 'ejemplo@correo.com',
+                prefixIcon: Icon(
+                  LucideIcons.mail,
+                  color: AppColors.textTertiary,
+                  size: 20.sp,
+                ),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(
+                  errorText: 'El correo es requerido',
+                ),
+                FormBuilderValidators.email(
+                  errorText: 'Ingresa un correo válido',
+                ),
+              ]),
+            ),
+            SizedBox(height: 20.h),
+            // Campo de contraseña
+            Text(
+              'Contraseña',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            FormBuilderTextField(
+              name: 'password',
+              decoration: InputDecoration(
+                hintText: '••••••••',
+                prefixIcon: Icon(
+                  LucideIcons.lock,
+                  color: AppColors.textTertiary,
+                  size: 20.sp,
+                ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? LucideIcons.eyeOff : LucideIcons.eye,
+                    color: AppColors.textTertiary,
+                    size: 20.sp,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _onLogin(),
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(
+                  errorText: 'La contraseña es requerida',
+                ),
+                FormBuilderValidators.minLength(
+                  6,
+                  errorText: 'Mínimo 6 caracteres',
+                ),
+              ]),
+            ),
+            SizedBox(height: 8.h),
+            // Olvidé mi contraseña
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () {
+                  // TODO: Implement forgot password
+                },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                ),
+                child: Text(
+                  'Olvidé mi contraseña',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 24.h),
+            // Botón de login
+            SizedBox(
+              height: 56.h,
+              child: ElevatedButton(
+                onPressed: isLoading ? null : _onLogin,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                ),
+                child: isLoading
+                    ? SizedBox(
+                        width: 24.w,
+                        height: 24.w,
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        'Iniciar sesión',
+                        style: AppTypography.labelLarge.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDemoCredentials() {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(
+        color: AppColors.primarySoft,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.15),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            child: Icon(
+              LucideIcons.info,
+              size: 20.sp,
+              color: AppColors.primary,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Credenciales de prueba',
+                  style: AppTypography.labelLarge.copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  'demo@interligo.com  •  demo123',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

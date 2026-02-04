@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -20,26 +21,42 @@ class _SplashPageState extends State<SplashPage>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _slideAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+      ),
+    );
+
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1800),
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
       ),
     );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+    _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+        curve: const Interval(0.0, 0.5, curve: Curves.elasticOut),
+      ),
+    );
+
+    _slideAnimation = Tween<double>(begin: 30.0, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.3, 0.7, curve: Curves.easeOut),
       ),
     );
 
@@ -72,57 +89,97 @@ class _SplashPageState extends State<SplashPage>
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.primary,
-        body: Center(
-          child: AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) {
-              return FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(scale: _scaleAnimation, child: child),
-              );
-            },
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 100.w,
-                  height: 100.w,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24.r),
-                  ),
-                  child: Icon(
-                    Icons.account_balance,
-                    size: 56.sp,
-                    color: AppColors.primary,
-                  ),
-                ),
-                SizedBox(height: 24.h),
-                Text(
-                  'Interligo',
-                  style: AppTypography.displayLarge.copyWith(
-                    color: Colors.white,
-                    letterSpacing: 2,
-                  ),
-                ),
-                SizedBox(height: 8.h),
-                Text(
-                  'Tu banca personal',
-                  style: AppTypography.bodyLarge.copyWith(
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
-                SizedBox(height: 48.h),
-                SizedBox(
-                  width: 24.w,
-                  height: 24.w,
-                  child: const CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                ),
-              ],
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: AppColors.splashGradient,
+          ),
+          child: SafeArea(
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Column(
+                  children: [
+                    const Spacer(flex: 2),
+                    // Logo con animación
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: ScaleTransition(
+                        scale: _scaleAnimation,
+                        child: Container(
+                          width: 120.w,
+                          height: 120.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(32.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.2),
+                                blurRadius: 30,
+                                offset: const Offset(0, 15),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.account_balance_rounded,
+                            size: 60.sp,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 32.h),
+                    // Nombre de la app
+                    Transform.translate(
+                      offset: Offset(0, _slideAnimation.value),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Text(
+                          'Interligo',
+                          style: AppTypography.displayLarge.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    // Tagline
+                    Transform.translate(
+                      offset: Offset(0, _slideAnimation.value),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Text(
+                          'Tu banca personal',
+                          style: AppTypography.bodyLarge.copyWith(
+                            color: Colors.white.withValues(alpha: 0.85),
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Spacer(flex: 2),
+                    // Indicador de carga minimalista
+                    FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: SizedBox(
+                        width: 32.w,
+                        height: 32.w,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 60.h),
+                  ],
+                );
+              },
             ),
           ),
         ),
