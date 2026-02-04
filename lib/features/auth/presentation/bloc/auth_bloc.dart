@@ -10,6 +10,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUseCase logoutUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
 
+  /// Callback to notify when login is successful (e.g., to load user)
+  void Function()? onLoginSuccess;
+
+  /// Callback to notify when logout is successful (e.g., to clear user)
+  void Function()? onLogoutSuccess;
+
   AuthBloc({
     required this.loginUseCase,
     required this.logoutUseCase,
@@ -28,11 +34,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.fold(
       (failure) => emit(const AuthUnauthenticated()),
-      (isAuthenticated) => emit(
-        isAuthenticated
-            ? const AuthAuthenticated()
-            : const AuthUnauthenticated(),
-      ),
+      (isAuthenticated) {
+        if (isAuthenticated) {
+          emit(const AuthAuthenticated());
+          onLoginSuccess?.call();
+        } else {
+          emit(const AuthUnauthenticated());
+        }
+      },
     );
   }
 
@@ -48,7 +57,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.fold(
       (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const AuthAuthenticated()),
+      (_) {
+        emit(const AuthAuthenticated());
+        onLoginSuccess?.call();
+      },
     );
   }
 
@@ -61,7 +73,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     result.fold(
       (failure) => emit(AuthError(failure.message)),
-      (_) => emit(const AuthUnauthenticated()),
+      (_) {
+        onLogoutSuccess?.call();
+        emit(const AuthUnauthenticated());
+      },
     );
   }
 }
