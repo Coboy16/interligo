@@ -16,13 +16,11 @@ import 'features/user/presentation/bloc/bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Initialize dependencies
   await initializeDependencies();
 
   runApp(const InterligoApp());
@@ -34,14 +32,13 @@ class InterligoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(375, 812), // iPhone X design size
+      designSize: const Size(375, 812),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
         final authBloc = sl<AuthBloc>();
         final userBloc = sl<UserBloc>();
 
-        // Connect AuthBloc with UserBloc
         authBloc.onLoginSuccess = () {
           userBloc.add(const UserLoadRequested());
         };
@@ -65,7 +62,7 @@ class InterligoApp extends StatelessWidget {
               final router = AppRouter.router(authBloc);
 
               return MaterialApp.router(
-                title: 'Interligo',
+                title: 'Inteligo',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.light,
                 routerConfig: router,
