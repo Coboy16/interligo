@@ -3,12 +3,20 @@ import '../../../../core/constants/storage_constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/logger_util.dart';
 import '../models/token_model.dart';
+import '../models/user_model.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> saveToken(TokenModel token);
   Future<TokenModel?> getToken();
+  Future<String?> getRefreshToken();
   Future<void> clearToken();
   Future<bool> hasToken();
+
+  Future<void> saveUser(UserModel user);
+  Future<UserModel?> getUser();
+  Future<void> clearUser();
+
+  Future<void> clearAll();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -75,13 +83,21 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
+  Future<String?> getRefreshToken() async {
+    try {
+      return await _storage.read(key: StorageConstants.refreshToken);
+    } catch (e) {
+      throw CacheException(message: 'Error al leer refresh token');
+    }
+  }
+
+  @override
   Future<void> clearToken() async {
     try {
-      LoggerUtil.logAuthEvent('Limpiando credenciales locales');
+      LoggerUtil.logAuthEvent('Limpiando tokens');
       await _storage.delete(key: StorageConstants.accessToken);
       await _storage.delete(key: StorageConstants.refreshToken);
       await _storage.delete(key: StorageConstants.tokenExpiry);
-      await _storage.delete(key: StorageConstants.userId);
     } catch (e) {
       throw CacheException(message: 'Error al eliminar token');
     }
@@ -91,5 +107,81 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<bool> hasToken() async {
     final token = await getToken();
     return token != null;
+  }
+
+  @override
+  Future<void> saveUser(UserModel user) async {
+    try {
+      LoggerUtil.logAuthEvent('Guardando Usuario en Storage Seguro');
+      await _storage.write(
+        key: StorageConstants.userId,
+        value: user.id,
+      );
+      await _storage.write(
+        key: StorageConstants.userUsername,
+        value: user.username,
+      );
+      await _storage.write(
+        key: StorageConstants.userEmail,
+        value: user.email,
+      );
+      if (user.name != null) {
+        await _storage.write(
+          key: StorageConstants.userName,
+          value: user.name,
+        );
+      }
+    } catch (e) {
+      throw CacheException(message: 'Error al guardar usuario');
+    }
+  }
+
+  @override
+  Future<UserModel?> getUser() async {
+    try {
+      final id = await _storage.read(key: StorageConstants.userId);
+      final username = await _storage.read(key: StorageConstants.userUsername);
+      final email = await _storage.read(key: StorageConstants.userEmail);
+      final name = await _storage.read(key: StorageConstants.userName);
+
+      if (id == null || username == null || email == null) {
+        LoggerUtil.logAuthEvent('No hay usuario en Storage');
+        return null;
+      }
+
+      LoggerUtil.logAuthEvent('Usuario recuperado');
+      return UserModel(
+        id: id,
+        username: username,
+        email: email,
+        name: name,
+      );
+    } catch (e) {
+      throw CacheException(message: 'Error al leer usuario');
+    }
+  }
+
+  @override
+  Future<void> clearUser() async {
+    try {
+      LoggerUtil.logAuthEvent('Limpiando datos de usuario');
+      await _storage.delete(key: StorageConstants.userId);
+      await _storage.delete(key: StorageConstants.userUsername);
+      await _storage.delete(key: StorageConstants.userEmail);
+      await _storage.delete(key: StorageConstants.userName);
+    } catch (e) {
+      throw CacheException(message: 'Error al eliminar usuario');
+    }
+  }
+
+  @override
+  Future<void> clearAll() async {
+    try {
+      LoggerUtil.logAuthEvent('Limpiando todas las credenciales');
+      await clearToken();
+      await clearUser();
+    } catch (e) {
+      throw CacheException(message: 'Error al limpiar credenciales');
+    }
   }
 }
