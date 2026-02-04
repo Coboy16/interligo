@@ -26,18 +26,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           'email': email,
           'password': password,
           'grant_type': 'authorization_code',
-          'code_verifier': 'mock_code_verifier_${DateTime.now().millisecondsSinceEpoch}',
+          'code_verifier':
+              'mock_code_verifier_${DateTime.now().millisecondsSinceEpoch}',
         },
       );
 
       return TokenModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ?? 'Error de autenticación',
+        message:
+            e.response?.data['message'] as String? ?? 'Error de autenticación',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
-      throw ServerException(message: 'Error inesperado durante la autenticación');
+      throw ServerException(
+        message: 'Error inesperado durante la autenticación',
+      );
     }
   }
 }

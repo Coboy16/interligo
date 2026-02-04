@@ -55,7 +55,10 @@ class CardsRepositoryImpl implements CardsRepository {
 
     try {
       final card = await remoteDataSource.updateCardStatus(cardId, newStatus);
-      await localDataSource.updateCardStatus(cardId, newStatus.name.toUpperCase());
+      await localDataSource.updateCardStatus(
+        cardId,
+        newStatus.name.toUpperCase(),
+      );
       return Right(card);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

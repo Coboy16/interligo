@@ -56,17 +56,11 @@ void main() {
 
     group('transactionAmount', () {
       test('should format positive amounts with plus sign', () {
-        expect(
-          Formatters.transactionAmount(100.00, 'USD'),
-          '+\$100.00',
-        );
+        expect(Formatters.transactionAmount(100.00, 'USD'), '+\$100.00');
       });
 
       test('should format negative amounts without extra sign', () {
-        expect(
-          Formatters.transactionAmount(-50.00, 'USD'),
-          '-\$50.00',
-        );
+        expect(Formatters.transactionAmount(-50.00, 'USD'), '-\$50.00');
       });
     });
 

@@ -87,7 +87,9 @@ class PaginatedTransactionsModel extends PaginatedTransactions {
 
     return PaginatedTransactionsModel(
       transactions: data
-          .map((item) => TransactionModel.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) => TransactionModel.fromJson(item as Map<String, dynamic>),
+          )
           .toList(),
       currentPage: pagination['current_page'] as int,
       totalPages: pagination['total_pages'] as int,

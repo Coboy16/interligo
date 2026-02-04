@@ -26,7 +26,10 @@ class ConnectivityBanner extends StatelessWidget {
               ? Container(
                   width: double.infinity,
                   color: AppColors.warning,
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   child: SafeArea(
                     bottom: false,
                     child: Row(
@@ -68,18 +71,12 @@ class OfflineBanner extends StatelessWidget {
       color: AppColors.warning.withValues(alpha: 0.1),
       child: Row(
         children: [
-          Icon(
-            LucideIcons.wifiOff,
-            size: 18.sp,
-            color: AppColors.warning,
-          ),
+          Icon(LucideIcons.wifiOff, size: 18.sp, color: AppColors.warning),
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
               'Sin conexión. Los datos pueden no estar actualizados.',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.warning,
-              ),
+              style: AppTypography.bodySmall.copyWith(color: AppColors.warning),
             ),
           ),
         ],

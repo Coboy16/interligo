@@ -24,7 +24,9 @@ class AccountsRemoteDataSourceImpl implements AccountsRemoteDataSource {
           .toList();
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ?? 'Error al obtener cuentas',
+        message:
+            e.response?.data['message'] as String? ??
+            'Error al obtener cuentas',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
@@ -39,7 +41,8 @@ class AccountsRemoteDataSourceImpl implements AccountsRemoteDataSource {
       return AccountModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ?? 'Error al obtener cuenta',
+        message:
+            e.response?.data['message'] as String? ?? 'Error al obtener cuenta',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {

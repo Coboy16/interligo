@@ -68,10 +68,7 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
     );
   }
 
-  void _onReset(
-    TransferReset event,
-    Emitter<TransfersState> emit,
-  ) {
+  void _onReset(TransferReset event, Emitter<TransfersState> emit) {
     emit(const TransfersInitial());
   }
 }

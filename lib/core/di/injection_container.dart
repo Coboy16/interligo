@@ -85,11 +85,13 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => CheckAuthStatusUseCase(sl()));
 
   // BLoC - Singleton for auth to maintain state across app
-  sl.registerLazySingleton(() => AuthBloc(
-        loginUseCase: sl(),
-        logoutUseCase: sl(),
-        checkAuthStatusUseCase: sl(),
-      ));
+  sl.registerLazySingleton(
+    () => AuthBloc(
+      loginUseCase: sl(),
+      logoutUseCase: sl(),
+      checkAuthStatusUseCase: sl(),
+    ),
+  );
 
   // ==========================================================================
   // ACCOUNTS FEATURE
@@ -116,10 +118,9 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => GetAccountByIdUseCase(sl()));
 
   // BLoC
-  sl.registerFactory(() => AccountsBloc(
-        getAccountsUseCase: sl(),
-        getAccountByIdUseCase: sl(),
-      ));
+  sl.registerFactory(
+    () => AccountsBloc(getAccountsUseCase: sl(), getAccountByIdUseCase: sl()),
+  );
 
   // ==========================================================================
   // TRANSACTIONS FEATURE
@@ -145,9 +146,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => GetTransactionsUseCase(sl()));
 
   // BLoC
-  sl.registerFactory(() => TransactionsBloc(
-        getTransactionsUseCase: sl(),
-      ));
+  sl.registerFactory(() => TransactionsBloc(getTransactionsUseCase: sl()));
 
   // ==========================================================================
   // TRANSFERS FEATURE
@@ -159,10 +158,7 @@ Future<void> initializeDependencies() async {
 
   // Repository
   sl.registerLazySingleton<TransfersRepository>(
-    () => TransfersRepositoryImpl(
-      remoteDataSource: sl(),
-      networkInfo: sl(),
-    ),
+    () => TransfersRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
   // UseCases
@@ -171,11 +167,13 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => ConfirmTransferUseCase(sl()));
 
   // BLoC
-  sl.registerFactory(() => TransfersBloc(
-        getBeneficiariesUseCase: sl(),
-        createTransferUseCase: sl(),
-        confirmTransferUseCase: sl(),
-      ));
+  sl.registerFactory(
+    () => TransfersBloc(
+      getBeneficiariesUseCase: sl(),
+      createTransferUseCase: sl(),
+      confirmTransferUseCase: sl(),
+    ),
+  );
 
   // ==========================================================================
   // CARDS FEATURE
@@ -202,8 +200,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton(() => ToggleCardFreezeUseCase(sl()));
 
   // BLoC
-  sl.registerFactory(() => CardsBloc(
-        getCardsUseCase: sl(),
-        toggleCardFreezeUseCase: sl(),
-      ));
+  sl.registerFactory(
+    () => CardsBloc(getCardsUseCase: sl(), toggleCardFreezeUseCase: sl()),
+  );
 }

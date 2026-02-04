@@ -82,7 +82,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   Expanded(
                     child: ListView.builder(
                       padding: EdgeInsets.all(16.w),
-                      itemCount: state.accounts.length + 1, // +1 for quick actions
+                      itemCount:
+                          state.accounts.length + 1, // +1 for quick actions
                       itemBuilder: (context, index) {
                         if (index == 0) {
                           return _buildQuickActions(context, state.accounts);
@@ -103,7 +104,10 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildQuickActions(BuildContext context, List<AccountEntity> accounts) {
+  Widget _buildQuickActions(
+    BuildContext context,
+    List<AccountEntity> accounts,
+  ) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),
       child: Row(
@@ -114,9 +118,9 @@ class _DashboardPageState extends State<DashboardPage> {
               label: 'Transferir',
               onTap: accounts.isNotEmpty
                   ? () => context.push(
-                        RoutePaths.selectBeneficiary,
-                        extra: {'sourceAccount': accounts.first},
-                      )
+                      RoutePaths.selectBeneficiary,
+                      extra: {'sourceAccount': accounts.first},
+                    )
                   : null,
             ),
           ),
@@ -263,15 +267,9 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   ),
                   SizedBox(height: 12.h),
-                  Text(
-                    'Saldo disponible',
-                    style: AppTypography.bodySmall,
-                  ),
+                  Text('Saldo disponible', style: AppTypography.bodySmall),
                   SizedBox(height: 4.h),
-                  Text(
-                    '\$15,000.00',
-                    style: AppTypography.moneyLarge,
-                  ),
+                  Text('\$15,000.00', style: AppTypography.moneyLarge),
                   SizedBox(height: 8.h),
                   Text(
                     'Saldo contable: \$15,500.00',
@@ -333,17 +331,11 @@ class _QuickActionButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 16.h),
           child: Column(
             children: [
-              Icon(
-                icon,
-                color: Colors.white,
-                size: 24.sp,
-              ),
+              Icon(icon, color: Colors.white, size: 24.sp),
               SizedBox(height: 8.h),
               Text(
                 label,
-                style: AppTypography.labelLarge.copyWith(
-                  color: Colors.white,
-                ),
+                style: AppTypography.labelLarge.copyWith(color: Colors.white),
               ),
             ],
           ),

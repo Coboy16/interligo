@@ -32,7 +32,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(const AuthUnauthenticated()),
       (isAuthenticated) => emit(
-        isAuthenticated ? const AuthAuthenticated() : const AuthUnauthenticated(),
+        isAuthenticated
+            ? const AuthAuthenticated()
+            : const AuthUnauthenticated(),
       ),
     );
   }

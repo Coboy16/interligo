@@ -41,9 +41,7 @@ class TransferReviewPage extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Confirmar transferencia'),
-        ),
+        appBar: AppBar(title: const Text('Confirmar transferencia')),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.all(16.w),
@@ -224,11 +222,7 @@ class TransferReviewPage extends StatelessWidget {
       padding: EdgeInsets.only(bottom: 8.h),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 18.sp,
-            color: AppColors.textTertiary,
-          ),
+          Icon(icon, size: 18.sp, color: AppColors.textTertiary),
           SizedBox(width: 8.w),
           Expanded(
             child: Text(
@@ -252,11 +246,11 @@ class TransferReviewPage extends StatelessWidget {
 
   void _onConfirm(BuildContext context) {
     context.read<TransfersBloc>().add(
-          CreateTransferRequested(
-            beneficiaryId: beneficiary.id,
-            sourceAccountId: sourceAccount.id,
-            amount: transfer.amount,
-          ),
-        );
+      CreateTransferRequested(
+        beneficiaryId: beneficiary.id,
+        sourceAccountId: sourceAccount.id,
+        amount: transfer.amount,
+      ),
+    );
   }
 }

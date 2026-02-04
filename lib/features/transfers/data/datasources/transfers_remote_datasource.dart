@@ -26,16 +26,21 @@ class TransfersRemoteDataSourceImpl implements TransfersRemoteDataSource {
       final response = await _dio.get(ApiConstants.beneficiaries);
       final data = response.data as List<dynamic>;
       return data
-          .map((json) => BeneficiaryModel.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => BeneficiaryModel.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ??
+        message:
+            e.response?.data['message'] as String? ??
             'Error al obtener beneficiarios',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
-      throw ServerException(message: 'Error inesperado al obtener beneficiarios');
+      throw ServerException(
+        message: 'Error inesperado al obtener beneficiarios',
+      );
     }
   }
 
@@ -59,7 +64,8 @@ class TransfersRemoteDataSourceImpl implements TransfersRemoteDataSource {
     } on DioException catch (e) {
       throw ServerException(
         message:
-            e.response?.data['message'] as String? ?? 'Error al crear transferencia',
+            e.response?.data['message'] as String? ??
+            'Error al crear transferencia',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
@@ -77,7 +83,8 @@ class TransfersRemoteDataSourceImpl implements TransfersRemoteDataSource {
       return TransferModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ??
+        message:
+            e.response?.data['message'] as String? ??
             'Error al confirmar transferencia',
         statusCode: e.response?.statusCode,
       );

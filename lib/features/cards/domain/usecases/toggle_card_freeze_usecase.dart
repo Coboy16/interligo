@@ -9,7 +9,10 @@ class ToggleCardFreezeUseCase {
 
   ToggleCardFreezeUseCase(this.repository);
 
-  Future<Either<Failure, CardEntity>> call(String cardId, CardStatus newStatus) {
+  Future<Either<Failure, CardEntity>> call(
+    String cardId,
+    CardStatus newStatus,
+  ) {
     return repository.toggleCardFreeze(cardId, newStatus);
   }
 }

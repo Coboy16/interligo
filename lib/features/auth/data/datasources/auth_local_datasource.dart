@@ -41,8 +41,12 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   Future<TokenModel?> getToken() async {
     try {
-      final accessToken = await _storage.read(key: StorageConstants.accessToken);
-      final refreshToken = await _storage.read(key: StorageConstants.refreshToken);
+      final accessToken = await _storage.read(
+        key: StorageConstants.accessToken,
+      );
+      final refreshToken = await _storage.read(
+        key: StorageConstants.refreshToken,
+      );
 
       if (accessToken == null || refreshToken == null) return null;
 

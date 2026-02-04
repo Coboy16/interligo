@@ -16,11 +16,7 @@ class BeneficiaryModel extends BeneficiaryEntity {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'account_number': accountNumber,
-    };
+    return {'id': id, 'name': name, 'account_number': accountNumber};
   }
 
   factory BeneficiaryModel.fromEntity(BeneficiaryEntity entity) {

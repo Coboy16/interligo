@@ -32,12 +32,15 @@ class TransactionsRemoteDataSourceImpl implements TransactionsRemoteDataSource {
       );
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ??
+        message:
+            e.response?.data['message'] as String? ??
             'Error al obtener transacciones',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
-      throw ServerException(message: 'Error inesperado al obtener transacciones');
+      throw ServerException(
+        message: 'Error inesperado al obtener transacciones',
+      );
     }
   }
 }

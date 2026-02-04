@@ -21,10 +21,7 @@ class CardFreezeToggled extends CardsEvent {
   final String cardId;
   final CardStatus newStatus;
 
-  const CardFreezeToggled({
-    required this.cardId,
-    required this.newStatus,
-  });
+  const CardFreezeToggled({required this.cardId, required this.newStatus});
 
   @override
   List<Object?> get props => [cardId, newStatus];

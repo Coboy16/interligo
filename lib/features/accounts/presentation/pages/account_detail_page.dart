@@ -15,10 +15,7 @@ import '../bloc/bloc.dart';
 class AccountDetailPage extends StatefulWidget {
   final String accountId;
 
-  const AccountDetailPage({
-    super.key,
-    required this.accountId,
-  });
+  const AccountDetailPage({super.key, required this.accountId});
 
   @override
   State<AccountDetailPage> createState() => _AccountDetailPageState();
@@ -34,9 +31,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detalle de Cuenta'),
-      ),
+      appBar: AppBar(title: const Text('Detalle de Cuenta')),
       body: BlocBuilder<AccountsBloc, AccountsState>(
         builder: (context, state) {
           if (state is AccountDetailLoading) {
@@ -47,9 +42,9 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             return ErrorView(
               message: state.message,
               onRetry: () {
-                context
-                    .read<AccountsBloc>()
-                    .add(AccountDetailRequested(widget.accountId));
+                context.read<AccountsBloc>().add(
+                  AccountDetailRequested(widget.accountId),
+                );
               },
             );
           }
@@ -139,9 +134,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                   ),
                 ),
                 SizedBox(height: 16.h),
-                Divider(
-                  color: Colors.white.withValues(alpha: 0.2),
-                ),
+                Divider(color: Colors.white.withValues(alpha: 0.2)),
                 SizedBox(height: 16.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -207,9 +200,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             text: 'Ver todos los movimientos',
             icon: LucideIcons.list,
             variant: AppButtonVariant.outlined,
-            onPressed: () => context.push(
-              '/dashboard/account/${account.id}/transactions',
-            ),
+            onPressed: () =>
+                context.push('/dashboard/account/${account.id}/transactions'),
           ),
         ],
       ),
@@ -242,9 +234,7 @@ class _BalanceInfo extends StatelessWidget {
         SizedBox(height: 4.h),
         Text(
           value,
-          style: AppTypography.moneyMedium.copyWith(
-            color: Colors.white,
-          ),
+          style: AppTypography.moneyMedium.copyWith(color: Colors.white),
         ),
       ],
     );
@@ -279,11 +269,7 @@ class _ActionCard extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppColors.primary,
-                  size: 24.sp,
-                ),
+                child: Icon(icon, color: AppColors.primary, size: 24.sp),
               ),
               SizedBox(height: 12.h),
               Text(

@@ -52,12 +52,12 @@ class TransactionsLoaded extends TransactionsState {
 
   @override
   List<Object?> get props => [
-        transactions,
-        currentPage,
-        totalPages,
-        isLoadingMore,
-        isFromCache,
-      ];
+    transactions,
+    currentPage,
+    totalPages,
+    isLoadingMore,
+    isFromCache,
+  ];
 }
 
 class TransactionsError extends TransactionsState {

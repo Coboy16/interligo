@@ -16,10 +16,7 @@ import '../bloc/bloc.dart';
 class SelectBeneficiaryPage extends StatefulWidget {
   final AccountEntity? sourceAccount;
 
-  const SelectBeneficiaryPage({
-    super.key,
-    this.sourceAccount,
-  });
+  const SelectBeneficiaryPage({super.key, this.sourceAccount});
 
   @override
   State<SelectBeneficiaryPage> createState() => _SelectBeneficiaryPageState();
@@ -35,9 +32,7 @@ class _SelectBeneficiaryPageState extends State<SelectBeneficiaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Seleccionar destinatario'),
-      ),
+      appBar: AppBar(title: const Text('Seleccionar destinatario')),
       body: BlocBuilder<TransfersBloc, TransfersState>(
         builder: (context, state) {
           if (state is BeneficiariesLoading) {
@@ -48,9 +43,9 @@ class _SelectBeneficiaryPageState extends State<SelectBeneficiaryPage> {
             return ErrorView(
               message: state.message,
               onRetry: () {
-                context
-                    .read<TransfersBloc>()
-                    .add(const BeneficiariesLoadRequested());
+                context.read<TransfersBloc>().add(
+                  const BeneficiariesLoadRequested(),
+                );
               },
             );
           }
@@ -164,15 +159,9 @@ class _SelectBeneficiaryPageState extends State<SelectBeneficiaryPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Juan Pérez',
-                          style: AppTypography.titleMedium,
-                        ),
+                        Text('Juan Pérez', style: AppTypography.titleMedium),
                         SizedBox(height: 4.h),
-                        Text(
-                          '****4532',
-                          style: AppTypography.bodySmall,
-                        ),
+                        Text('****4532', style: AppTypography.bodySmall),
                       ],
                     ),
                   ),
@@ -188,7 +177,9 @@ class _SelectBeneficiaryPageState extends State<SelectBeneficiaryPage> {
   void _onBeneficiarySelected(BeneficiaryEntity beneficiary) {
     if (widget.sourceAccount == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Selecciona una cuenta de origen primero')),
+        const SnackBar(
+          content: Text('Selecciona una cuenta de origen primero'),
+        ),
       );
       return;
     }

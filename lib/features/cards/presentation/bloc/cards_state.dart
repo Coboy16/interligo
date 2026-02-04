@@ -57,10 +57,7 @@ class CardUpdateSuccess extends CardsState {
   final CardEntity card;
   final List<CardEntity> cards;
 
-  const CardUpdateSuccess({
-    required this.card,
-    required this.cards,
-  });
+  const CardUpdateSuccess({required this.card, required this.cards});
 
   @override
   List<Object?> get props => [card, cards];
@@ -70,10 +67,7 @@ class CardUpdateError extends CardsState {
   final String message;
   final List<CardEntity> cards;
 
-  const CardUpdateError({
-    required this.message,
-    required this.cards,
-  });
+  const CardUpdateError({required this.message, required this.cards});
 
   @override
   List<Object?> get props => [message, cards];

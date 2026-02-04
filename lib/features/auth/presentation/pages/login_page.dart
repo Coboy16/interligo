@@ -27,11 +27,11 @@ class _LoginPageState extends State<LoginPage> {
     if (_formKey.currentState?.saveAndValidate() ?? false) {
       final values = _formKey.currentState!.value;
       context.read<AuthBloc>().add(
-            AuthLoginRequested(
-              email: values['email'] as String,
-              password: values['password'] as String,
-            ),
-          );
+        AuthLoginRequested(
+          email: values['email'] as String,
+          password: values['password'] as String,
+        ),
+      );
     }
   }
 

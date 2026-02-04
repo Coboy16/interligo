@@ -37,8 +37,9 @@ void main() {
   group('GetAccountsUseCase', () {
     test('should get list of accounts from repository', () async {
       // Arrange
-      when(() => mockRepository.getAccounts())
-          .thenAnswer((_) async => Right(tAccounts));
+      when(
+        () => mockRepository.getAccounts(),
+      ).thenAnswer((_) async => Right(tAccounts));
 
       // Act
       final result = await useCase();
@@ -52,8 +53,9 @@ void main() {
     test('should return ServerFailure when repository fails', () async {
       // Arrange
       const tFailure = ServerFailure('Error loading accounts');
-      when(() => mockRepository.getAccounts())
-          .thenAnswer((_) async => const Left(tFailure));
+      when(
+        () => mockRepository.getAccounts(),
+      ).thenAnswer((_) async => const Left(tFailure));
 
       // Act
       final result = await useCase();
@@ -62,18 +64,21 @@ void main() {
       expect(result, const Left(tFailure));
     });
 
-    test('should return CacheFailure when offline and no cached data',
-        () async {
-      // Arrange
-      const tFailure = CacheFailure('No cached accounts');
-      when(() => mockRepository.getAccounts())
-          .thenAnswer((_) async => const Left(tFailure));
+    test(
+      'should return CacheFailure when offline and no cached data',
+      () async {
+        // Arrange
+        const tFailure = CacheFailure('No cached accounts');
+        when(
+          () => mockRepository.getAccounts(),
+        ).thenAnswer((_) async => const Left(tFailure));
 
-      // Act
-      final result = await useCase();
+        // Act
+        final result = await useCase();
 
-      // Assert
-      expect(result, const Left(tFailure));
-    });
+        // Assert
+        expect(result, const Left(tFailure));
+      },
+    );
   });
 }

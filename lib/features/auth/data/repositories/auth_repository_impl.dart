@@ -25,7 +25,9 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure('Se requiere conexión a internet para iniciar sesión'));
+      return const Left(
+        NetworkFailure('Se requiere conexión a internet para iniciar sesión'),
+      );
     }
 
     try {
@@ -71,6 +73,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, TokenEntity>> refreshToken() async {
     // TODO: Implement actual token refresh logic
-    return const Left(AuthFailure('Sesión expirada. Por favor inicia sesión nuevamente.'));
+    return const Left(
+      AuthFailure('Sesión expirada. Por favor inicia sesión nuevamente.'),
+    );
   }
 }

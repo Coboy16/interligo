@@ -46,19 +46,22 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
       }
     } else {
       try {
-        final cachedTransactions =
-            await localDataSource.getTransactions(accountId);
+        final cachedTransactions = await localDataSource.getTransactions(
+          accountId,
+        );
 
         if (cachedTransactions.isEmpty) {
           return const Left(CacheFailure('No hay transacciones en cache'));
         }
 
-        return Right(PaginatedTransactions(
-          transactions: cachedTransactions,
-          currentPage: 1,
-          totalPages: 1,
-          perPage: cachedTransactions.length,
-        ));
+        return Right(
+          PaginatedTransactions(
+            transactions: cachedTransactions,
+            currentPage: 1,
+            totalPages: 1,
+            perPage: cachedTransactions.length,
+          ),
+        );
       } on CacheException catch (e) {
         return Left(CacheFailure(e.message));
       }

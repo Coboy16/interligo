@@ -39,21 +39,13 @@ class InterligoApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
-            BlocProvider<AuthBloc>(
-              create: (_) => sl<AuthBloc>(),
-            ),
-            BlocProvider<AccountsBloc>(
-              create: (_) => sl<AccountsBloc>(),
-            ),
+            BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+            BlocProvider<AccountsBloc>(create: (_) => sl<AccountsBloc>()),
             BlocProvider<TransactionsBloc>(
               create: (_) => sl<TransactionsBloc>(),
             ),
-            BlocProvider<TransfersBloc>(
-              create: (_) => sl<TransfersBloc>(),
-            ),
-            BlocProvider<CardsBloc>(
-              create: (_) => sl<CardsBloc>(),
-            ),
+            BlocProvider<TransfersBloc>(create: (_) => sl<TransfersBloc>()),
+            BlocProvider<CardsBloc>(create: (_) => sl<CardsBloc>()),
           ],
           child: Builder(
             builder: (context) {

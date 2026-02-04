@@ -7,9 +7,8 @@ import 'transactions_state.dart';
 class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
   final GetTransactionsUseCase getTransactionsUseCase;
 
-  TransactionsBloc({
-    required this.getTransactionsUseCase,
-  }) : super(const TransactionsInitial()) {
+  TransactionsBloc({required this.getTransactionsUseCase})
+    : super(const TransactionsInitial()) {
     on<TransactionsLoadRequested>(_onLoadTransactions);
     on<TransactionsLoadMoreRequested>(_onLoadMoreTransactions);
     on<TransactionsRefreshRequested>(_onRefreshTransactions);
@@ -28,11 +27,13 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
     result.fold(
       (failure) => emit(TransactionsError(failure.message)),
-      (paginatedTransactions) => emit(TransactionsLoaded(
-        transactions: paginatedTransactions.transactions,
-        currentPage: paginatedTransactions.currentPage,
-        totalPages: paginatedTransactions.totalPages,
-      )),
+      (paginatedTransactions) => emit(
+        TransactionsLoaded(
+          transactions: paginatedTransactions.transactions,
+          currentPage: paginatedTransactions.currentPage,
+          totalPages: paginatedTransactions.totalPages,
+        ),
+      ),
     );
   }
 
@@ -54,15 +55,17 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
     result.fold(
       (failure) => emit(currentState.copyWith(isLoadingMore: false)),
-      (paginatedTransactions) => emit(TransactionsLoaded(
-        transactions: [
-          ...currentState.transactions,
-          ...paginatedTransactions.transactions,
-        ],
-        currentPage: paginatedTransactions.currentPage,
-        totalPages: paginatedTransactions.totalPages,
-        isLoadingMore: false,
-      )),
+      (paginatedTransactions) => emit(
+        TransactionsLoaded(
+          transactions: [
+            ...currentState.transactions,
+            ...paginatedTransactions.transactions,
+          ],
+          currentPage: paginatedTransactions.currentPage,
+          totalPages: paginatedTransactions.totalPages,
+          isLoadingMore: false,
+        ),
+      ),
     );
   }
 
@@ -77,11 +80,13 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
 
     result.fold(
       (failure) => emit(TransactionsError(failure.message)),
-      (paginatedTransactions) => emit(TransactionsLoaded(
-        transactions: paginatedTransactions.transactions,
-        currentPage: paginatedTransactions.currentPage,
-        totalPages: paginatedTransactions.totalPages,
-      )),
+      (paginatedTransactions) => emit(
+        TransactionsLoaded(
+          transactions: paginatedTransactions.transactions,
+          currentPage: paginatedTransactions.currentPage,
+          totalPages: paginatedTransactions.totalPages,
+        ),
+      ),
     );
   }
 }

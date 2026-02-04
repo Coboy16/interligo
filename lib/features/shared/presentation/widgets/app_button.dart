@@ -72,9 +72,7 @@ class AppButton extends StatelessWidget {
       case AppButtonVariant.secondary:
         return ElevatedButton(
           onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.secondary,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
           child: buttonChild,
         );
       case AppButtonVariant.outlined:
@@ -87,9 +85,7 @@ class AppButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           child: Text(
             text,
-            style: AppTypography.labelLarge.copyWith(
-              color: AppColors.primary,
-            ),
+            style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
           ),
         );
     }

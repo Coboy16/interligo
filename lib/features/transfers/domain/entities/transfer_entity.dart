@@ -43,11 +43,11 @@ class TransferEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        beneficiaryId,
-        sourceAccountId,
-        amount,
-        status,
-        timestamp,
-      ];
+    id,
+    beneficiaryId,
+    sourceAccountId,
+    amount,
+    status,
+    timestamp,
+  ];
 }

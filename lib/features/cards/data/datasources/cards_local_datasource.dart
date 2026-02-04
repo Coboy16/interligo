@@ -51,7 +51,9 @@ class CardsLocalDataSourceImpl implements CardsLocalDataSource {
     try {
       await _database.updateCardStatus(cardId, status);
     } catch (e) {
-      throw CacheException(message: 'Error al actualizar estado de tarjeta en cache');
+      throw CacheException(
+        message: 'Error al actualizar estado de tarjeta en cache',
+      );
     }
   }
 

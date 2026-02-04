@@ -15,10 +15,7 @@ import '../bloc/bloc.dart';
 class TransactionsPage extends StatefulWidget {
   final String accountId;
 
-  const TransactionsPage({
-    super.key,
-    required this.accountId,
-  });
+  const TransactionsPage({super.key, required this.accountId});
 
   @override
   State<TransactionsPage> createState() => _TransactionsPageState();
@@ -30,9 +27,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<TransactionsBloc>()
-        .add(TransactionsLoadRequested(widget.accountId));
+    context.read<TransactionsBloc>().add(
+      TransactionsLoadRequested(widget.accountId),
+    );
     _scrollController.addListener(_onScroll);
   }
 
@@ -44,9 +41,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
 
   void _onScroll() {
     if (_isBottom) {
-      context
-          .read<TransactionsBloc>()
-          .add(TransactionsLoadMoreRequested(widget.accountId));
+      context.read<TransactionsBloc>().add(
+        TransactionsLoadMoreRequested(widget.accountId),
+      );
     }
   }
 
@@ -58,17 +55,15 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Future<void> _onRefresh() async {
-    context
-        .read<TransactionsBloc>()
-        .add(TransactionsRefreshRequested(widget.accountId));
+    context.read<TransactionsBloc>().add(
+      TransactionsRefreshRequested(widget.accountId),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Movimientos'),
-      ),
+      appBar: AppBar(title: const Text('Movimientos')),
       body: BlocBuilder<TransactionsBloc, TransactionsState>(
         builder: (context, state) {
           if (state is TransactionsLoading) {
@@ -79,9 +74,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
             return ErrorView(
               message: state.message,
               onRetry: () {
-                context
-                    .read<TransactionsBloc>()
-                    .add(TransactionsLoadRequested(widget.accountId));
+                context.read<TransactionsBloc>().add(
+                  TransactionsLoadRequested(widget.accountId),
+                );
               },
             );
           }
@@ -104,7 +99,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     child: ListView.builder(
                       controller: _scrollController,
                       padding: EdgeInsets.all(16.w),
-                      itemCount: state.transactions.length +
+                      itemCount:
+                          state.transactions.length +
                           (state.isLoadingMore ? 1 : 0),
                       itemBuilder: (context, index) {
                         if (index >= state.transactions.length) {
@@ -112,7 +108,8 @@ class _TransactionsPageState extends State<TransactionsPage> {
                         }
 
                         final transaction = state.transactions[index];
-                        final showDateHeader = index == 0 ||
+                        final showDateHeader =
+                            index == 0 ||
                             !_isSameDay(
                               state.transactions[index - 1].date,
                               transaction.date,
@@ -201,9 +198,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
             ),
             Text(
               '$amountPrefix${Formatters.currency(transaction.amount.abs())}',
-              style: AppTypography.moneyMedium.copyWith(
-                color: amountColor,
-              ),
+              style: AppTypography.moneyMedium.copyWith(color: amountColor),
             ),
           ],
         ),
@@ -250,17 +245,11 @@ class _TransactionsPageState extends State<TransactionsPage> {
                           style: AppTypography.titleMedium,
                         ),
                         SizedBox(height: 4.h),
-                        Text(
-                          '10:30',
-                          style: AppTypography.bodySmall,
-                        ),
+                        Text('10:30', style: AppTypography.bodySmall),
                       ],
                     ),
                   ),
-                  Text(
-                    '-\$150.00',
-                    style: AppTypography.moneyMedium,
-                  ),
+                  Text('-\$150.00', style: AppTypography.moneyMedium),
                 ],
               ),
             ),

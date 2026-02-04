@@ -21,10 +21,7 @@ class AccountsLoaded extends AccountsState {
   final List<AccountEntity> accounts;
   final bool isFromCache;
 
-  const AccountsLoaded({
-    required this.accounts,
-    this.isFromCache = false,
-  });
+  const AccountsLoaded({required this.accounts, this.isFromCache = false});
 
   @override
   List<Object?> get props => [accounts, isFromCache];
@@ -47,10 +44,7 @@ class AccountDetailLoaded extends AccountsState {
   final AccountEntity account;
   final bool isFromCache;
 
-  const AccountDetailLoaded({
-    required this.account,
-    this.isFromCache = false,
-  });
+  const AccountDetailLoaded({required this.account, this.isFromCache = false});
 
   @override
   List<Object?> get props => [account, isFromCache];

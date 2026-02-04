@@ -15,7 +15,8 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateMixin {
+class _SplashPageState extends State<SplashPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
@@ -78,10 +79,7 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
             builder: (context, child) {
               return FadeTransition(
                 opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: child,
-                ),
+                child: ScaleTransition(scale: _scaleAnimation, child: child),
               );
             },
             child: Column(

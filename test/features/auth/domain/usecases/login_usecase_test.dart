@@ -28,10 +28,12 @@ void main() {
   group('LoginUseCase', () {
     test('should get token from repository when login is successful', () async {
       // Arrange
-      when(() => mockRepository.login(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => const Right(tToken));
+      when(
+        () => mockRepository.login(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => const Right(tToken));
 
       // Act
       final result = await useCase(email: tEmail, password: tPassword);
@@ -45,10 +47,12 @@ void main() {
     test('should return failure when login fails', () async {
       // Arrange
       const tFailure = AuthFailure('Invalid credentials');
-      when(() => mockRepository.login(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => const Left(tFailure));
+      when(
+        () => mockRepository.login(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => const Left(tFailure));
 
       // Act
       final result = await useCase(email: tEmail, password: tPassword);
@@ -59,20 +63,24 @@ void main() {
       verifyNoMoreInteractions(mockRepository);
     });
 
-    test('should return NetworkFailure when there is no internet connection',
-        () async {
-      // Arrange
-      const tFailure = NetworkFailure('No internet connection');
-      when(() => mockRepository.login(
+    test(
+      'should return NetworkFailure when there is no internet connection',
+      () async {
+        // Arrange
+        const tFailure = NetworkFailure('No internet connection');
+        when(
+          () => mockRepository.login(
             email: any(named: 'email'),
             password: any(named: 'password'),
-          )).thenAnswer((_) async => const Left(tFailure));
+          ),
+        ).thenAnswer((_) async => const Left(tFailure));
 
-      // Act
-      final result = await useCase(email: tEmail, password: tPassword);
+        // Act
+        final result = await useCase(email: tEmail, password: tPassword);
 
-      // Assert
-      expect(result, const Left(tFailure));
-    });
+        // Assert
+        expect(result, const Left(tFailure));
+      },
+    );
   });
 }

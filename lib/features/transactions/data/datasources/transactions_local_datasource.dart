@@ -19,8 +19,9 @@ class TransactionsLocalDataSourceImpl implements TransactionsLocalDataSource {
   @override
   Future<List<TransactionModel>> getTransactions(String accountId) async {
     try {
-      final transactions =
-          await _database.getTransactionsByAccountId(accountId);
+      final transactions = await _database.getTransactionsByAccountId(
+        accountId,
+      );
       return transactions
           .map((data) => TransactionModel.fromTableData(data))
           .toList();
@@ -47,8 +48,9 @@ class TransactionsLocalDataSourceImpl implements TransactionsLocalDataSource {
         );
       }).toList();
 
-      final companions =
-          transactionsWithAccountId.map((t) => t.toTableCompanion()).toList();
+      final companions = transactionsWithAccountId
+          .map((t) => t.toTableCompanion())
+          .toList();
       await _database.insertTransactions(companions);
     } catch (e) {
       throw CacheException(message: 'Error al guardar transacciones en cache');

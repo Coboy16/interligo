@@ -13,10 +13,7 @@ import '../../domain/entities/transfer_entity.dart';
 class TransferConfirmationPage extends StatelessWidget {
   final TransferEntity transfer;
 
-  const TransferConfirmationPage({
-    super.key,
-    required this.transfer,
-  });
+  const TransferConfirmationPage({super.key, required this.transfer});
 
   @override
   Widget build(BuildContext context) {
@@ -151,8 +148,9 @@ class TransferConfirmationPage extends StatelessWidget {
                             vertical: 4.h,
                           ),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(transfer.status)
-                                .withValues(alpha: 0.1),
+                            color: _getStatusColor(
+                              transfer.status,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4.r),
                           ),
                           child: Text(

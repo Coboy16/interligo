@@ -19,10 +19,10 @@ class AccountEntity extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        alias,
-        currency,
-        availableBalance,
-        ledgerBalance,
-      ];
+    id,
+    alias,
+    currency,
+    availableBalance,
+    ledgerBalance,
+  ];
 }

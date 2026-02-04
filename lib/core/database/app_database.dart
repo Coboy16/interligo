@@ -25,9 +25,9 @@ class AppDatabase extends _$AppDatabase {
   Future<List<AccountsTableData>> getAllAccounts() =>
       select(accountsTable).get();
 
-  Future<AccountsTableData?> getAccountById(String accountId) =>
-      (select(accountsTable)..where((t) => t.accountId.equals(accountId)))
-          .getSingleOrNull();
+  Future<AccountsTableData?> getAccountById(String accountId) => (select(
+    accountsTable,
+  )..where((t) => t.accountId.equals(accountId))).getSingleOrNull();
 
   Future<void> insertAccounts(List<AccountsTableCompanion> accounts) async {
     await batch((batch) {
@@ -54,16 +54,16 @@ class AppDatabase extends _$AppDatabase {
     });
   }
 
-  Future<void> clearTransactionsByAccountId(String accountId) =>
-      (delete(transactionsTable)..where((t) => t.accountId.equals(accountId)))
-          .go();
+  Future<void> clearTransactionsByAccountId(String accountId) => (delete(
+    transactionsTable,
+  )..where((t) => t.accountId.equals(accountId))).go();
 
   // ========== CARDS ==========
   Future<List<CardsTableData>> getAllCards() => select(cardsTable).get();
 
-  Future<CardsTableData?> getCardById(String cardId) =>
-      (select(cardsTable)..where((t) => t.cardId.equals(cardId)))
-          .getSingleOrNull();
+  Future<CardsTableData?> getCardById(String cardId) => (select(
+    cardsTable,
+  )..where((t) => t.cardId.equals(cardId))).getSingleOrNull();
 
   Future<void> insertCards(List<CardsTableCompanion> cards) async {
     await batch((batch) {
@@ -72,8 +72,9 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> updateCardStatus(String cardId, String status) =>
-      (update(cardsTable)..where((t) => t.cardId.equals(cardId)))
-          .write(CardsTableCompanion(status: Value(status)));
+      (update(cardsTable)..where((t) => t.cardId.equals(cardId))).write(
+        CardsTableCompanion(status: Value(status)),
+      );
 
   Future<void> clearCards() => delete(cardsTable).go();
 

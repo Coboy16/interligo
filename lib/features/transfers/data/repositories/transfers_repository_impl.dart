@@ -20,7 +20,9 @@ class TransfersRepositoryImpl implements TransfersRepository {
   @override
   Future<Either<Failure, List<BeneficiaryEntity>>> getBeneficiaries() async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure('Se requiere conexión para ver beneficiarios'));
+      return const Left(
+        NetworkFailure('Se requiere conexión para ver beneficiarios'),
+      );
     }
 
     try {
@@ -38,7 +40,9 @@ class TransfersRepositoryImpl implements TransfersRepository {
     required double amount,
   }) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure('Se requiere conexión para realizar transferencias'));
+      return const Left(
+        NetworkFailure('Se requiere conexión para realizar transferencias'),
+      );
     }
 
     try {
@@ -58,7 +62,9 @@ class TransfersRepositoryImpl implements TransfersRepository {
     String transferId,
   ) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure('Se requiere conexión para confirmar transferencia'));
+      return const Left(
+        NetworkFailure('Se requiere conexión para confirmar transferencia'),
+      );
     }
 
     try {

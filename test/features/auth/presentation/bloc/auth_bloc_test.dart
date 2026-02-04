@@ -13,7 +13,8 @@ class MockLoginUseCase extends Mock implements LoginUseCase {}
 
 class MockLogoutUseCase extends Mock implements LogoutUseCase {}
 
-class MockCheckAuthStatusUseCase extends Mock implements CheckAuthStatusUseCase {}
+class MockCheckAuthStatusUseCase extends Mock
+    implements CheckAuthStatusUseCase {}
 
 void main() {
   late AuthBloc bloc;
@@ -53,19 +54,18 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthAuthenticated] when login succeeds',
         build: () {
-          when(() => mockLoginUseCase(
-                email: any(named: 'email'),
-                password: any(named: 'password'),
-              )).thenAnswer((_) async => const Right(tToken));
+          when(
+            () => mockLoginUseCase(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            ),
+          ).thenAnswer((_) async => const Right(tToken));
           return bloc;
         },
         act: (bloc) => bloc.add(
           const AuthLoginRequested(email: tEmail, password: tPassword),
         ),
-        expect: () => [
-          const AuthLoading(),
-          const AuthAuthenticated(),
-        ],
+        expect: () => [const AuthLoading(), const AuthAuthenticated()],
         verify: (_) {
           verify(() => mockLoginUseCase(email: tEmail, password: tPassword));
         },
@@ -74,10 +74,12 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthError] when login fails',
         build: () {
-          when(() => mockLoginUseCase(
-                email: any(named: 'email'),
-                password: any(named: 'password'),
-              )).thenAnswer(
+          when(
+            () => mockLoginUseCase(
+              email: any(named: 'email'),
+              password: any(named: 'password'),
+            ),
+          ).thenAnswer(
             (_) async => const Left(AuthFailure('Invalid credentials')),
           );
           return bloc;
@@ -96,15 +98,13 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthUnauthenticated] when logout succeeds',
         build: () {
-          when(() => mockLogoutUseCase())
-              .thenAnswer((_) async => const Right(null));
+          when(
+            () => mockLogoutUseCase(),
+          ).thenAnswer((_) async => const Right(null));
           return bloc;
         },
         act: (bloc) => bloc.add(const AuthLogoutRequested()),
-        expect: () => [
-          const AuthLoading(),
-          const AuthUnauthenticated(),
-        ],
+        expect: () => [const AuthLoading(), const AuthUnauthenticated()],
       );
     });
 
@@ -112,29 +112,25 @@ void main() {
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthAuthenticated] when user is authenticated',
         build: () {
-          when(() => mockCheckAuthStatusUseCase())
-              .thenAnswer((_) async => const Right(true));
+          when(
+            () => mockCheckAuthStatusUseCase(),
+          ).thenAnswer((_) async => const Right(true));
           return bloc;
         },
         act: (bloc) => bloc.add(const AuthCheckStatusRequested()),
-        expect: () => [
-          const AuthLoading(),
-          const AuthAuthenticated(),
-        ],
+        expect: () => [const AuthLoading(), const AuthAuthenticated()],
       );
 
       blocTest<AuthBloc, AuthState>(
         'emits [AuthLoading, AuthUnauthenticated] when user is not authenticated',
         build: () {
-          when(() => mockCheckAuthStatusUseCase())
-              .thenAnswer((_) async => const Right(false));
+          when(
+            () => mockCheckAuthStatusUseCase(),
+          ).thenAnswer((_) async => const Right(false));
           return bloc;
         },
         act: (bloc) => bloc.add(const AuthCheckStatusRequested()),
-        expect: () => [
-          const AuthLoading(),
-          const AuthUnauthenticated(),
-        ],
+        expect: () => [const AuthLoading(), const AuthUnauthenticated()],
       );
     });
   });

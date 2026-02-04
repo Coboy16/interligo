@@ -26,7 +26,8 @@ class CardsRemoteDataSourceImpl implements CardsRemoteDataSource {
     } on DioException catch (e) {
       throw ServerException(
         message:
-            e.response?.data['message'] as String? ?? 'Error al obtener tarjetas',
+            e.response?.data['message'] as String? ??
+            'Error al obtener tarjetas',
         statusCode: e.response?.statusCode,
       );
     } catch (e) {
@@ -35,7 +36,10 @@ class CardsRemoteDataSourceImpl implements CardsRemoteDataSource {
   }
 
   @override
-  Future<CardModel> updateCardStatus(String cardId, CardStatus newStatus) async {
+  Future<CardModel> updateCardStatus(
+    String cardId,
+    CardStatus newStatus,
+  ) async {
     try {
       final response = await _dio.patch(
         ApiConstants.card(cardId),
@@ -45,7 +49,8 @@ class CardsRemoteDataSourceImpl implements CardsRemoteDataSource {
       return CardModel.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw ServerException(
-        message: e.response?.data['message'] as String? ??
+        message:
+            e.response?.data['message'] as String? ??
             'Error al actualizar estado de tarjeta',
         statusCode: e.response?.statusCode,
       );

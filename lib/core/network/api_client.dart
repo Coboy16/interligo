@@ -5,6 +5,7 @@ import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../constants/api_constants.dart';
 import '../constants/storage_constants.dart';
+import 'mock_interceptor.dart';
 
 class ApiClient {
   final Dio _dio;
@@ -19,6 +20,7 @@ class ApiClient {
     );
 
     _dio.interceptors.addAll([
+      MockInterceptor(),
       _AuthInterceptor(_storage),
       if (kDebugMode)
         PrettyDioLogger(
@@ -45,7 +47,6 @@ class _AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // Skip auth header for login endpoint
     if (options.path.contains('/auth/')) {
       return handler.next(options);
     }
@@ -59,9 +60,7 @@ class _AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (err.response?.statusCode == 401) {
-      // Token expired - could trigger logout or refresh
-    }
+    if (err.response?.statusCode == 401) {}
     handler.next(err);
   }
 }

@@ -57,10 +57,9 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
     final result = await toggleCardFreezeUseCase(event.cardId, event.newStatus);
 
     result.fold(
-      (failure) => emit(CardUpdateError(
-        message: failure.message,
-        cards: currentState.cards,
-      )),
+      (failure) => emit(
+        CardUpdateError(message: failure.message, cards: currentState.cards),
+      ),
       (updatedCard) {
         final updatedCards = currentState.cards.map((card) {
           if (card.id == updatedCard.id) {
@@ -69,10 +68,7 @@ class CardsBloc extends Bloc<CardsEvent, CardsState> {
           return card;
         }).toList();
 
-        emit(CardUpdateSuccess(
-          card: updatedCard,
-          cards: updatedCards,
-        ));
+        emit(CardUpdateSuccess(card: updatedCard, cards: updatedCards));
       },
     );
   }
