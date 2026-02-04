@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/utils/logger_util.dart';
 import '../../domain/entities/account_entity.dart';
 import '../../domain/repositories/accounts_repository.dart';
 import '../datasources/accounts_local_datasource.dart';
@@ -24,7 +25,12 @@ class AccountsRepositoryImpl implements AccountsRepository {
     if (await networkInfo.isConnected) {
       try {
         final accounts = await remoteDataSource.getAccounts();
-        await localDataSource.cacheAccounts(accounts);
+        // Cache is non-fatal - log and continue if it fails
+        try {
+          await localDataSource.cacheAccounts(accounts);
+        } catch (e) {
+          LoggerUtil.warning('Failed to cache accounts: $e');
+        }
         return Right(accounts);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));

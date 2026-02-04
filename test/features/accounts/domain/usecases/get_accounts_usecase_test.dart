@@ -21,16 +21,22 @@ void main() {
     const AccountEntity(
       id: 'acc_001',
       alias: 'Cuenta Principal',
+      accountNumber: '0000000000000001',
       currency: 'USD',
       availableBalance: 15000.50,
       ledgerBalance: 15500.00,
+      type: AccountType.savings,
+      status: AccountStatus.active,
     ),
     const AccountEntity(
       id: 'acc_002',
       alias: 'Cuenta de Ahorros',
+      accountNumber: '0000000000000002',
       currency: 'USD',
       availableBalance: 8500.25,
       ledgerBalance: 8500.25,
+      type: AccountType.savings,
+      status: AccountStatus.active,
     ),
   ];
 
