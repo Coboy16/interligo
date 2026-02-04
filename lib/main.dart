@@ -11,6 +11,7 @@ import 'features/auth/presentation/bloc/bloc.dart';
 import 'features/cards/presentation/bloc/bloc.dart';
 import 'features/transactions/presentation/bloc/bloc.dart';
 import 'features/transfers/presentation/bloc/bloc.dart';
+import 'features/user/presentation/bloc/bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,9 +38,21 @@ class InterligoApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
+        final authBloc = sl<AuthBloc>();
+        final userBloc = sl<UserBloc>();
+
+        // Connect AuthBloc with UserBloc
+        authBloc.onLoginSuccess = () {
+          userBloc.add(const UserLoadRequested());
+        };
+        authBloc.onLogoutSuccess = () {
+          userBloc.add(const UserCleared());
+        };
+
         return MultiBlocProvider(
           providers: [
-            BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
+            BlocProvider<AuthBloc>.value(value: authBloc),
+            BlocProvider<UserBloc>.value(value: userBloc),
             BlocProvider<AccountsBloc>(create: (_) => sl<AccountsBloc>()),
             BlocProvider<TransactionsBloc>(
               create: (_) => sl<TransactionsBloc>(),
@@ -49,7 +62,6 @@ class InterligoApp extends StatelessWidget {
           ],
           child: Builder(
             builder: (context) {
-              final authBloc = context.read<AuthBloc>();
               final router = AppRouter.router(authBloc);
 
               return MaterialApp.router(
