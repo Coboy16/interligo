@@ -11,6 +11,9 @@ class TransactionModel extends TransactionEntity {
     required super.amount,
     required super.description,
     required super.type,
+    super.category,
+    super.referenceNumber,
+    required super.status,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -20,10 +23,35 @@ class TransactionModel extends TransactionEntity {
       date: DateTime.parse(json['date'] as String),
       amount: (json['amount'] as num).toDouble(),
       description: json['description'] as String,
-      type: (json['type'] as String) == 'income'
-          ? TransactionType.income
-          : TransactionType.expense,
+      type: _parseTransactionType(json['type'] as String),
+      category: json['category'] as String?,
+      referenceNumber: json['reference_number'] as String?,
+      status: _parseTransactionStatus(json['status'] as String),
     );
+  }
+
+  static TransactionType _parseTransactionType(String type) {
+    switch (type.toUpperCase()) {
+      case 'CREDIT':
+        return TransactionType.credit;
+      case 'DEBIT':
+        return TransactionType.debit;
+      default:
+        return TransactionType.debit;
+    }
+  }
+
+  static TransactionStatus _parseTransactionStatus(String status) {
+    switch (status.toUpperCase()) {
+      case 'COMPLETED':
+        return TransactionStatus.completed;
+      case 'PENDING':
+        return TransactionStatus.pending;
+      case 'FAILED':
+        return TransactionStatus.failed;
+      default:
+        return TransactionStatus.completed;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -33,7 +61,10 @@ class TransactionModel extends TransactionEntity {
       'date': date.toIso8601String(),
       'amount': amount,
       'description': description,
-      'type': type == TransactionType.income ? 'income' : 'expense',
+      'type': type == TransactionType.credit ? 'CREDIT' : 'DEBIT',
+      'category': category,
+      'reference_number': referenceNumber,
+      'status': status.name.toUpperCase(),
     };
   }
 
@@ -45,6 +76,9 @@ class TransactionModel extends TransactionEntity {
       amount: entity.amount,
       description: entity.description,
       type: entity.type,
+      category: entity.category,
+      referenceNumber: entity.referenceNumber,
+      status: entity.status,
     );
   }
 
@@ -55,9 +89,10 @@ class TransactionModel extends TransactionEntity {
       date: data.date,
       amount: data.amount,
       description: data.description,
-      type: data.type == 'income'
-          ? TransactionType.income
-          : TransactionType.expense,
+      type: data.type == 'CREDIT'
+          ? TransactionType.credit
+          : TransactionType.debit,
+      status: TransactionStatus.completed, // Default for cached data
     );
   }
 
@@ -68,7 +103,7 @@ class TransactionModel extends TransactionEntity {
       date: Value(date),
       amount: Value(amount),
       description: Value(description),
-      type: Value(type == TransactionType.income ? 'income' : 'expense'),
+      type: Value(type == TransactionType.credit ? 'CREDIT' : 'DEBIT'),
     );
   }
 }
@@ -78,7 +113,8 @@ class PaginatedTransactionsModel extends PaginatedTransactions {
     required List<TransactionModel> super.transactions,
     required super.currentPage,
     required super.totalPages,
-    required super.perPage,
+    required super.totalItems,
+    required super.itemsPerPage,
   });
 
   factory PaginatedTransactionsModel.fromJson(Map<String, dynamic> json) {
@@ -93,7 +129,8 @@ class PaginatedTransactionsModel extends PaginatedTransactions {
           .toList(),
       currentPage: pagination['current_page'] as int,
       totalPages: pagination['total_pages'] as int,
-      perPage: pagination['per_page'] as int,
+      totalItems: pagination['total_items'] as int,
+      itemsPerPage: pagination['items_per_page'] as int,
     );
   }
 }

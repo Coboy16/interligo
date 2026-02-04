@@ -45,6 +45,9 @@ class TransactionsLocalDataSourceImpl implements TransactionsLocalDataSource {
           amount: t.amount,
           description: t.description,
           type: t.type,
+          category: t.category,
+          referenceNumber: t.referenceNumber,
+          status: t.status,
         );
       }).toList();
 

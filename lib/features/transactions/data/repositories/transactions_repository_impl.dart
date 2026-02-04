@@ -59,7 +59,8 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
             transactions: cachedTransactions,
             currentPage: 1,
             totalPages: 1,
-            perPage: cachedTransactions.length,
+            totalItems: cachedTransactions.length,
+            itemsPerPage: cachedTransactions.length,
           ),
         );
       } on CacheException catch (e) {

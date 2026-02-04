@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-enum TransactionType { income, expense }
+enum TransactionType { credit, debit }
+
+enum TransactionStatus { completed, pending, failed }
 
 class TransactionEntity extends Equatable {
   final String id;
@@ -9,6 +11,9 @@ class TransactionEntity extends Equatable {
   final double amount;
   final String description;
   final TransactionType type;
+  final String? category;
+  final String? referenceNumber;
+  final TransactionStatus status;
 
   const TransactionEntity({
     required this.id,
@@ -17,31 +22,55 @@ class TransactionEntity extends Equatable {
     required this.amount,
     required this.description,
     required this.type,
+    this.category,
+    this.referenceNumber,
+    required this.status,
   });
 
-  bool get isIncome => type == TransactionType.income;
-  bool get isExpense => type == TransactionType.expense;
+  bool get isCredit => type == TransactionType.credit;
+  bool get isDebit => type == TransactionType.debit;
+
+  /// Amount is positive for credits, negative for debits in the API
+  double get displayAmount => amount.abs();
 
   @override
-  List<Object?> get props => [id, accountId, date, amount, description, type];
+  List<Object?> get props => [
+    id,
+    accountId,
+    date,
+    amount,
+    description,
+    type,
+    category,
+    referenceNumber,
+    status,
+  ];
 }
 
 class PaginatedTransactions extends Equatable {
   final List<TransactionEntity> transactions;
   final int currentPage;
   final int totalPages;
-  final int perPage;
+  final int totalItems;
+  final int itemsPerPage;
 
   const PaginatedTransactions({
     required this.transactions,
     required this.currentPage,
     required this.totalPages,
-    required this.perPage,
+    required this.totalItems,
+    required this.itemsPerPage,
   });
 
   bool get hasNextPage => currentPage < totalPages;
   bool get hasPreviousPage => currentPage > 1;
 
   @override
-  List<Object?> get props => [transactions, currentPage, totalPages, perPage];
+  List<Object?> get props => [
+    transactions,
+    currentPage,
+    totalPages,
+    totalItems,
+    itemsPerPage,
+  ];
 }

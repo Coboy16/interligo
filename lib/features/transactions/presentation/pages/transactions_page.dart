@@ -150,9 +150,9 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   Widget _buildTransactionTile(TransactionEntity transaction) {
-    final isIncome = transaction.isIncome;
-    final amountColor = isIncome ? AppColors.income : AppColors.expense;
-    final amountPrefix = isIncome ? '+' : '';
+    final isCredit = transaction.isCredit;
+    final amountColor = isCredit ? AppColors.income : AppColors.expense;
+    final amountPrefix = isCredit ? '+' : '';
 
     return Card(
       margin: EdgeInsets.only(bottom: 8.h),
@@ -168,7 +168,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 borderRadius: BorderRadius.circular(12.r),
               ),
               child: Icon(
-                isIncome ? LucideIcons.arrowDownLeft : LucideIcons.arrowUpRight,
+                isCredit ? LucideIcons.arrowDownLeft : LucideIcons.arrowUpRight,
                 color: amountColor,
                 size: 20.sp,
               ),
