@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/utils/logger_util.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../domain/repositories/transactions_repository.dart';
 import '../datasources/transactions_local_datasource.dart';
@@ -32,12 +33,16 @@ class TransactionsRepositoryImpl implements TransactionsRepository {
           page: page,
         );
 
-        // Cache first page
+        // Cache first page - non-fatal if it fails
         if (page == 1) {
-          await localDataSource.cacheTransactions(
-            accountId,
-            result.transactions.cast<TransactionModel>(),
-          );
+          try {
+            await localDataSource.cacheTransactions(
+              accountId,
+              result.transactions.cast<TransactionModel>(),
+            );
+          } catch (e) {
+            LoggerUtil.warning('Failed to cache transactions: $e');
+          }
         }
 
         return Right(result);

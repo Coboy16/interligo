@@ -98,6 +98,15 @@ class _DashboardPageState extends State<DashboardPage> {
             );
           }
 
+          // If we're in an unexpected state (e.g., AccountDetailLoaded),
+          // reload accounts
+          if (state is! AccountsInitial) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.read<AccountsBloc>().add(const AccountsLoadRequested());
+            });
+            return _buildSkeletonList();
+          }
+
           return const SizedBox.shrink();
         },
       ),
