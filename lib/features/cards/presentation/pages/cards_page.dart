@@ -183,7 +183,7 @@ class _CardsPageState extends State<CardsPage> {
                   ),
                   const Spacer(),
                   Text(
-                    card.maskedNumber,
+                    card.cardNumberMasked,
                     style: AppTypography.titleLarge.copyWith(
                       color: Colors.white,
                       letterSpacing: 4,

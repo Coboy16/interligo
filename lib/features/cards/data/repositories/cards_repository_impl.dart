@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/utils/logger_util.dart';
 import '../../domain/entities/card_entity.dart';
 import '../../domain/repositories/cards_repository.dart';
 import '../datasources/cards_local_datasource.dart';
@@ -24,7 +25,12 @@ class CardsRepositoryImpl implements CardsRepository {
     if (await networkInfo.isConnected) {
       try {
         final cards = await remoteDataSource.getCards();
-        await localDataSource.cacheCards(cards);
+        // Cache is non-fatal - log and continue if it fails
+        try {
+          await localDataSource.cacheCards(cards);
+        } catch (e) {
+          LoggerUtil.warning('Failed to cache cards: $e');
+        }
         return Right(cards);
       } on ServerException catch (e) {
         return Left(ServerFailure(e.message));
@@ -55,10 +61,15 @@ class CardsRepositoryImpl implements CardsRepository {
 
     try {
       final card = await remoteDataSource.updateCardStatus(cardId, newStatus);
-      await localDataSource.updateCardStatus(
-        cardId,
-        newStatus.name.toUpperCase(),
-      );
+      // Cache update is non-fatal
+      try {
+        await localDataSource.updateCardStatus(
+          cardId,
+          newStatus.name.toUpperCase(),
+        );
+      } catch (e) {
+        LoggerUtil.warning('Failed to update card status in cache: $e');
+      }
       return Right(card);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
