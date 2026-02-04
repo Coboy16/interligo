@@ -54,9 +54,9 @@ class _DashboardPageState extends State<DashboardPage> {
               return ErrorView(
                 message: state.message,
                 onRetry: () {
-                  context
-                      .read<AccountsBloc>()
-                      .add(const AccountsLoadRequested());
+                  context.read<AccountsBloc>().add(
+                    const AccountsLoadRequested(),
+                  );
                 },
               );
             }
@@ -77,9 +77,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 child: Column(
                   children: [
                     if (state.isFromCache) const OfflineBanner(),
-                    Expanded(
-                      child: _buildContent(context, state.accounts),
-                    ),
+                    Expanded(child: _buildContent(context, state.accounts)),
                   ],
                 ),
               );
@@ -87,9 +85,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
             if (state is! AccountsInitial) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                context
-                    .read<AccountsBloc>()
-                    .add(const AccountsLoadRequested());
+                context.read<AccountsBloc>().add(const AccountsLoadRequested());
               });
               return _buildContent(context, [], isLoading: true);
             }
@@ -101,14 +97,15 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildContent(BuildContext context, List<AccountEntity> accounts,
-      {bool isLoading = false}) {
+  Widget _buildContent(
+    BuildContext context,
+    List<AccountEntity> accounts, {
+    bool isLoading = false,
+  }) {
     return CustomScrollView(
       slivers: [
         // Header
-        SliverToBoxAdapter(
-          child: _buildHeader(context),
-        ),
+        SliverToBoxAdapter(child: _buildHeader(context)),
         // Quick Actions
         SliverToBoxAdapter(
           child: Padding(
@@ -137,8 +134,7 @@ class _DashboardPageState extends State<DashboardPage> {
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) =>
-                    _buildAccountCard(context, accounts[index]),
+                (context, index) => _buildAccountCard(context, accounts[index]),
                 childCount: accounts.length,
               ),
             ),
@@ -216,11 +212,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   : null,
             ),
           ),
-          Container(
-            width: 1,
-            height: 32.h,
-            color: AppColors.divider,
-          ),
+          Container(width: 1, height: 32.h, color: AppColors.divider),
           Expanded(
             child: _QuickActionButton(
               icon: LucideIcons.creditCard,
@@ -337,10 +329,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 SizedBox(height: 16.h),
                 // Divider sutil
-                Container(
-                  height: 1,
-                  color: AppColors.divider,
-                ),
+                Container(height: 1, color: AppColors.divider),
                 SizedBox(height: 16.h),
                 // Footer
                 Row(
@@ -421,17 +410,23 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Cuenta Principal',
-                                style: AppTypography.titleMedium),
+                            Text(
+                              'Cuenta Principal',
+                              style: AppTypography.titleMedium,
+                            ),
                             SizedBox(height: 2.h),
-                            Text('Cuenta de ahorros',
-                                style: AppTypography.bodySmall),
+                            Text(
+                              'Cuenta de ahorros',
+                              style: AppTypography.bodySmall,
+                            ),
                           ],
                         ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 6.h),
+                          horizontal: 10.w,
+                          vertical: 6.h,
+                        ),
                         child: const Text('USD'),
                       ),
                     ],
@@ -470,35 +465,61 @@ class _DashboardPageState extends State<DashboardPage> {
             color: AppColors.textSecondary,
           ),
         ),
+        actionsPadding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Cancelar',
-              style: AppTypography.labelLarge.copyWith(
-                color: AppColors.textSecondary,
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.primary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    minimumSize: Size.fromHeight(44.h),
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Cancelar',
+                      maxLines: 1,
+                      style: AppTypography.labelLarge.copyWith(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<AuthBloc>().add(const AuthLogoutRequested());
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    context.read<AuthBloc>().add(const AuthLogoutRequested());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    elevation: 0,
+                    minimumSize: Size.fromHeight(44.h),
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Cerrar sesión',
+                      maxLines: 1,
+                      style: AppTypography.labelLarge.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              elevation: 0,
-            ),
-            child: Text(
-              'Cerrar sesión',
-              style: AppTypography.labelLarge.copyWith(
-                color: Colors.white,
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -510,10 +531,7 @@ class _HeaderIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _HeaderIconButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -528,16 +546,9 @@ class _HeaderIconButton extends StatelessWidget {
           height: 48.w,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(
-              color: AppColors.divider,
-              width: 1,
-            ),
+            border: Border.all(color: AppColors.divider, width: 1),
           ),
-          child: Icon(
-            icon,
-            color: AppColors.textSecondary,
-            size: 22.sp,
-          ),
+          child: Icon(icon, color: AppColors.textSecondary, size: 22.sp),
         ),
       ),
     );
@@ -578,11 +589,7 @@ class _QuickActionButton extends StatelessWidget {
                       : AppColors.textTertiary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(10.r),
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white,
-                  size: 18.sp,
-                ),
+                child: Icon(icon, color: Colors.white, size: 18.sp),
               ),
               SizedBox(width: 10.w),
               Text(

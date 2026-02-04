@@ -76,9 +76,6 @@ class _LoginPageState extends State<LoginPage> {
                     // Formulario
                     _buildForm(isLoading),
                     SizedBox(height: 32.h),
-                    // Info de credenciales
-                    _buildDemoCredentials(),
-                    SizedBox(height: 32.h),
                   ],
                 ),
               ),
@@ -283,58 +280,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildDemoCredentials() {
-    return Container(
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: AppColors.primarySoft,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.15),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40.w,
-            height: 40.w,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: Icon(
-              LucideIcons.info,
-              size: 20.sp,
-              color: AppColors.primary,
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Credenciales de prueba',
-                  style: AppTypography.labelLarge.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 2.h),
-                Text(
-                  'demo@interligo.com  •  demo123',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
