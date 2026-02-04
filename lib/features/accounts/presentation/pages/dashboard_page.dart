@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +26,12 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
     context.read<AccountsBloc>().add(const AccountsLoadRequested());
   }
 
@@ -35,80 +42,151 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mis Cuentas'),
-        actions: [
-          IconButton(
-            icon: const Icon(LucideIcons.creditCard),
-            onPressed: () => context.push(RoutePaths.cards),
-            tooltip: 'Tarjetas',
-          ),
-          IconButton(
-            icon: const Icon(LucideIcons.logOut),
-            onPressed: () => _showLogoutDialog(context),
-            tooltip: 'Cerrar sesión',
-          ),
-        ],
-      ),
-      body: BlocBuilder<AccountsBloc, AccountsState>(
-        builder: (context, state) {
-          if (state is AccountsLoading) {
-            return _buildSkeletonList();
-          }
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: BlocBuilder<AccountsBloc, AccountsState>(
+          builder: (context, state) {
+            if (state is AccountsLoading) {
+              return _buildContent(context, [], isLoading: true);
+            }
 
-          if (state is AccountsError) {
-            return ErrorView(
-              message: state.message,
-              onRetry: () {
-                context.read<AccountsBloc>().add(const AccountsLoadRequested());
-              },
-            );
-          }
-
-          if (state is AccountsLoaded) {
-            if (state.accounts.isEmpty) {
-              return EmptyView(
-                title: 'Sin cuentas',
-                subtitle: 'No tienes cuentas registradas',
-                icon: LucideIcons.wallet,
+            if (state is AccountsError) {
+              return ErrorView(
+                message: state.message,
+                onRetry: () {
+                  context
+                      .read<AccountsBloc>()
+                      .add(const AccountsLoadRequested());
+                },
               );
             }
 
-            return RefreshIndicator(
-              onRefresh: _onRefresh,
-              child: Column(
-                children: [
-                  if (state.isFromCache) const OfflineBanner(),
-                  Expanded(
-                    child: ListView.builder(
-                      padding: EdgeInsets.all(16.w),
-                      itemCount:
-                          state.accounts.length + 1, // +1 for quick actions
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return _buildQuickActions(context, state.accounts);
-                        }
-                        final account = state.accounts[index - 1];
-                        return _buildAccountCard(context, account);
-                      },
+            if (state is AccountsLoaded) {
+              if (state.accounts.isEmpty) {
+                return EmptyView(
+                  title: 'Sin cuentas',
+                  subtitle: 'No tienes cuentas registradas',
+                  icon: LucideIcons.wallet,
+                );
+              }
+
+              return RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: AppColors.primary,
+                backgroundColor: AppColors.surface,
+                child: Column(
+                  children: [
+                    if (state.isFromCache) const OfflineBanner(),
+                    Expanded(
+                      child: _buildContent(context, state.accounts),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              );
+            }
+
+            if (state is! AccountsInitial) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context
+                    .read<AccountsBloc>()
+                    .add(const AccountsLoadRequested());
+              });
+              return _buildContent(context, [], isLoading: true);
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(BuildContext context, List<AccountEntity> accounts,
+      {bool isLoading = false}) {
+    return CustomScrollView(
+      slivers: [
+        // Header
+        SliverToBoxAdapter(
+          child: _buildHeader(context),
+        ),
+        // Quick Actions
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
+            child: _buildQuickActions(context, accounts),
+          ),
+        ),
+        // Section Title
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 12.h),
+            child: Text(
+              'Mis Cuentas',
+              style: AppTypography.titleLarge.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w700,
               ),
-            );
-          }
+            ),
+          ),
+        ),
+        // Account Cards
+        if (isLoading)
+          SliverToBoxAdapter(child: _buildSkeletonList())
+        else
+          SliverPadding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) =>
+                    _buildAccountCard(context, accounts[index]),
+                childCount: accounts.length,
+              ),
+            ),
+          ),
+        SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+      ],
+    );
+  }
 
-          // If we're in an unexpected state (e.g., AccountDetailLoaded),
-          // reload accounts
-          if (state is! AccountsInitial) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.read<AccountsBloc>().add(const AccountsLoadRequested());
-            });
-            return _buildSkeletonList();
-          }
-
-          return const SizedBox.shrink();
-        },
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(20.w, 16.h, 20.w, 20.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hola,',
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                'Bienvenido',
+                style: AppTypography.headlineLarge.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              _HeaderIconButton(
+                icon: LucideIcons.creditCard,
+                onTap: () => context.push(RoutePaths.cards),
+              ),
+              SizedBox(width: 8.w),
+              _HeaderIconButton(
+                icon: LucideIcons.logOut,
+                onTap: () => _showLogoutDialog(context),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -117,8 +195,13 @@ class _DashboardPageState extends State<DashboardPage> {
     BuildContext context,
     List<AccountEntity> accounts,
   ) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 16.h),
+    return Container(
+      padding: EdgeInsets.all(4.w),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.divider),
+      ),
       child: Row(
         children: [
           Expanded(
@@ -133,7 +216,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   : null,
             ),
           ),
-          SizedBox(width: 12.w),
+          Container(
+            width: 1,
+            height: 32.h,
+            color: AppColors.divider,
+          ),
           Expanded(
             child: _QuickActionButton(
               icon: LucideIcons.creditCard,
@@ -147,99 +234,155 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildAccountCard(BuildContext context, AccountEntity account) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: InkWell(
-        onTap: () => context.push('/dashboard/account/${account.id}'),
-        borderRadius: BorderRadius.circular(16.r),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      account.alias,
-                      style: AppTypography.titleMedium.copyWith(
-                        color: AppColors.textPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
-                    child: Text(
-                      account.currency,
-                      style: AppTypography.labelSmall.copyWith(
+    return Container(
+      margin: EdgeInsets.only(bottom: 16.h),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(20.r),
+        child: InkWell(
+          onTap: () => context.push('/dashboard/account/${account.id}'),
+          borderRadius: BorderRadius.circular(20.r),
+          child: Padding(
+            padding: EdgeInsets.all(20.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header de la tarjeta
+                Row(
+                  children: [
+                    Container(
+                      width: 48.w,
+                      height: 48.w,
+                      decoration: BoxDecoration(
                         color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(14.r),
+                      ),
+                      child: Icon(
+                        LucideIcons.wallet,
+                        color: Colors.white,
+                        size: 22.sp,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                'Saldo disponible',
-                style: AppTypography.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              SizedBox(height: 4.h),
-              Text(
-                Formatters.currency(
-                  account.availableBalance,
-                  currency: account.currency,
-                ),
-                style: AppTypography.moneyLarge.copyWith(
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Icon(
-                    LucideIcons.clock,
-                    size: 14.sp,
-                    color: AppColors.textTertiary,
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    'Saldo contable: ${Formatters.currency(account.ledgerBalance, currency: account.currency)}',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textTertiary,
+                    SizedBox(width: 14.w),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            account.alias,
+                            style: AppTypography.titleMedium.copyWith(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 2.h),
+                          Text(
+                            'Cuenta de ahorros',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Ver movimientos',
-                    style: AppTypography.labelLarge.copyWith(
-                      color: AppColors.primary,
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 6.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        account.currency,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
+                  ],
+                ),
+                SizedBox(height: 20.h),
+                // Saldo disponible
+                Text(
+                  'Saldo disponible',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
                   ),
-                  SizedBox(width: 4.w),
-                  Icon(
-                    LucideIcons.chevronRight,
-                    size: 18.sp,
-                    color: AppColors.primary,
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  Formatters.currency(
+                    account.availableBalance,
+                    currency: account.currency,
                   ),
-                ],
-              ),
-            ],
+                  style: AppTypography.moneyLarge.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                // Divider sutil
+                Container(
+                  height: 1,
+                  color: AppColors.divider,
+                ),
+                SizedBox(height: 16.h),
+                // Footer
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          LucideIcons.clock,
+                          size: 14.sp,
+                          color: AppColors.textTertiary,
+                        ),
+                        SizedBox(width: 6.w),
+                        Text(
+                          'Contable: ${Formatters.currency(account.ledgerBalance, currency: account.currency)}',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          'Ver más',
+                          style: AppTypography.labelLarge.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: 4.w),
+                        Icon(
+                          LucideIcons.chevronRight,
+                          size: 18.sp,
+                          color: AppColors.primary,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -248,47 +391,60 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildSkeletonList() {
     return Skeletonizer(
-      child: ListView.builder(
-        padding: EdgeInsets.all(16.w),
-        itemCount: 3,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: EdgeInsets.only(bottom: 12.h),
-            child: Padding(
-              padding: EdgeInsets.all(16.w),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        child: Column(
+          children: List.generate(
+            3,
+            (index) => Container(
+              margin: EdgeInsets.only(bottom: 16.h),
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(20.r),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Cuenta Principal',
-                        style: AppTypography.titleMedium,
+                      Container(
+                        width: 48.w,
+                        height: 48.w,
+                        decoration: BoxDecoration(
+                          color: AppColors.primarySoft,
+                          borderRadius: BorderRadius.circular(14.r),
+                        ),
+                      ),
+                      SizedBox(width: 14.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Cuenta Principal',
+                                style: AppTypography.titleMedium),
+                            SizedBox(height: 2.h),
+                            Text('Cuenta de ahorros',
+                                style: AppTypography.bodySmall),
+                          ],
+                        ),
                       ),
                       Container(
                         padding: EdgeInsets.symmetric(
-                          horizontal: 8.w,
-                          vertical: 4.h,
-                        ),
+                            horizontal: 10.w, vertical: 6.h),
                         child: const Text('USD'),
                       ),
                     ],
                   ),
-                  SizedBox(height: 12.h),
+                  SizedBox(height: 20.h),
                   Text('Saldo disponible', style: AppTypography.bodySmall),
                   SizedBox(height: 4.h),
                   Text('\$15,000.00', style: AppTypography.moneyLarge),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Saldo contable: \$15,500.00',
-                    style: AppTypography.bodySmall,
-                  ),
                 ],
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
@@ -296,22 +452,93 @@ class _DashboardPageState extends State<DashboardPage> {
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cerrar sesión'),
-        content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        title: Text(
+          'Cerrar sesión',
+          style: AppTypography.titleLarge.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        content: Text(
+          '¿Estás seguro de que deseas cerrar sesión?',
+          style: AppTypography.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancelar'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              'Cancelar',
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               context.read<AuthBloc>().add(const AuthLogoutRequested());
             },
-            child: const Text('Cerrar sesión'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              'Cerrar sesión',
+              style: AppTypography.labelLarge.copyWith(
+                color: Colors.white,
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _HeaderIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _HeaderIconButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(14.r),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14.r),
+        child: Container(
+          width: 48.w,
+          height: 48.w,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(
+              color: AppColors.divider,
+              width: 1,
+            ),
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.textSecondary,
+            size: 22.sp,
+          ),
+        ),
       ),
     );
   }
@@ -330,21 +557,42 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isEnabled = onTap != null;
+
     return Material(
-      color: AppColors.primary,
-      borderRadius: BorderRadius.circular(12.r),
+      color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12.r),
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 16.h),
-          child: Column(
+          padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: Colors.white, size: 24.sp),
-              SizedBox(height: 8.h),
+              Container(
+                width: 36.w,
+                height: 36.w,
+                decoration: BoxDecoration(
+                  color: isEnabled
+                      ? AppColors.primary
+                      : AppColors.textTertiary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 18.sp,
+                ),
+              ),
+              SizedBox(width: 10.w),
               Text(
                 label,
-                style: AppTypography.labelLarge.copyWith(color: Colors.white),
+                style: AppTypography.labelLarge.copyWith(
+                  color: isEnabled
+                      ? AppColors.textPrimary
+                      : AppColors.textTertiary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
