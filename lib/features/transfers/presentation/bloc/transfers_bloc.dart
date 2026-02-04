@@ -43,9 +43,11 @@ class TransfersBloc extends Bloc<TransfersEvent, TransfersState> {
     emit(const TransferCreating());
 
     final result = await createTransferUseCase(
+      fromAccountId: event.fromAccountId,
       beneficiaryId: event.beneficiaryId,
-      sourceAccountId: event.sourceAccountId,
       amount: event.amount,
+      currency: event.currency,
+      description: event.description,
     );
 
     result.fold(

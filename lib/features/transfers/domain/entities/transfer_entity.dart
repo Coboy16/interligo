@@ -1,53 +1,74 @@
 import 'package:equatable/equatable.dart';
 
-enum TransferStatus { pending, completed, failed }
+enum TransferStatus { pending, completed, failed, cancelled }
 
 class TransferEntity extends Equatable {
   final String id;
+  final String? userId;
+  final String fromAccountId;
   final String beneficiaryId;
-  final String sourceAccountId;
   final double amount;
+  final String currency;
+  final String? description;
   final TransferStatus status;
-  final DateTime? timestamp;
+  final DateTime createdAt;
+  final DateTime? confirmedAt;
 
   const TransferEntity({
     required this.id,
+    this.userId,
+    required this.fromAccountId,
     required this.beneficiaryId,
-    required this.sourceAccountId,
     required this.amount,
+    required this.currency,
+    this.description,
     required this.status,
-    this.timestamp,
+    required this.createdAt,
+    this.confirmedAt,
   });
 
   bool get isPending => status == TransferStatus.pending;
   bool get isCompleted => status == TransferStatus.completed;
   bool get isFailed => status == TransferStatus.failed;
+  bool get isCancelled => status == TransferStatus.cancelled;
 
   TransferEntity copyWith({
     String? id,
+    String? userId,
+    String? fromAccountId,
     String? beneficiaryId,
-    String? sourceAccountId,
     double? amount,
+    String? currency,
+    String? description,
     TransferStatus? status,
-    DateTime? timestamp,
+    DateTime? createdAt,
+    DateTime? confirmedAt,
   }) {
     return TransferEntity(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
+      fromAccountId: fromAccountId ?? this.fromAccountId,
       beneficiaryId: beneficiaryId ?? this.beneficiaryId,
-      sourceAccountId: sourceAccountId ?? this.sourceAccountId,
       amount: amount ?? this.amount,
+      currency: currency ?? this.currency,
+      description: description ?? this.description,
       status: status ?? this.status,
-      timestamp: timestamp ?? this.timestamp,
+      createdAt: createdAt ?? this.createdAt,
+      confirmedAt: confirmedAt ?? this.confirmedAt,
     );
   }
 
   @override
   List<Object?> get props => [
     id,
+    userId,
+    fromAccountId,
     beneficiaryId,
-    sourceAccountId,
     amount,
+    currency,
+    description,
     status,
-    timestamp,
+    createdAt,
+    confirmedAt,
   ];
 }

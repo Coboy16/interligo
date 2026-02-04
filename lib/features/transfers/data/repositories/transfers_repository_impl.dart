@@ -35,9 +35,11 @@ class TransfersRepositoryImpl implements TransfersRepository {
 
   @override
   Future<Either<Failure, TransferEntity>> createTransfer({
+    required String fromAccountId,
     required String beneficiaryId,
-    required String sourceAccountId,
     required double amount,
+    required String currency,
+    String? description,
   }) async {
     if (!await networkInfo.isConnected) {
       return const Left(
@@ -47,9 +49,11 @@ class TransfersRepositoryImpl implements TransfersRepository {
 
     try {
       final transfer = await remoteDataSource.createTransfer(
+        fromAccountId: fromAccountId,
         beneficiaryId: beneficiaryId,
-        sourceAccountId: sourceAccountId,
         amount: amount,
+        currency: currency,
+        description: description,
       );
       return Right(transfer);
     } on ServerException catch (e) {
@@ -70,6 +74,22 @@ class TransfersRepositoryImpl implements TransfersRepository {
     try {
       final transfer = await remoteDataSource.confirmTransfer(transferId);
       return Right(transfer);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<TransferEntity>>> getTransfers() async {
+    if (!await networkInfo.isConnected) {
+      return const Left(
+        NetworkFailure('Se requiere conexión para ver transferencias'),
+      );
+    }
+
+    try {
+      final transfers = await remoteDataSource.getTransfers();
+      return Right(transfers);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     }

@@ -3,22 +3,30 @@ import '../../domain/entities/transfer_entity.dart';
 class TransferModel extends TransferEntity {
   const TransferModel({
     required super.id,
+    super.userId,
+    required super.fromAccountId,
     required super.beneficiaryId,
-    required super.sourceAccountId,
     required super.amount,
+    required super.currency,
+    super.description,
     required super.status,
-    super.timestamp,
+    required super.createdAt,
+    super.confirmedAt,
   });
 
   factory TransferModel.fromJson(Map<String, dynamic> json) {
     return TransferModel(
       id: json['id'] as String,
-      beneficiaryId: json['beneficiary_id'] as String? ?? '',
-      sourceAccountId: json['source_account_id'] as String? ?? '',
-      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      userId: json['user_id'] as String?,
+      fromAccountId: json['from_account_id'] as String,
+      beneficiaryId: json['beneficiary_id'] as String,
+      amount: (json['amount'] as num).toDouble(),
+      currency: json['currency'] as String,
+      description: json['description'] as String?,
       status: _parseStatus(json['status'] as String),
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
+      createdAt: DateTime.parse(json['created_at'] as String),
+      confirmedAt: json['confirmed_at'] != null
+          ? DateTime.parse(json['confirmed_at'] as String)
           : null,
     );
   }
@@ -31,6 +39,8 @@ class TransferModel extends TransferEntity {
         return TransferStatus.completed;
       case 'FAILED':
         return TransferStatus.failed;
+      case 'CANCELLED':
+        return TransferStatus.cancelled;
       default:
         return TransferStatus.pending;
     }
@@ -39,22 +49,30 @@ class TransferModel extends TransferEntity {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'user_id': userId,
+      'from_account_id': fromAccountId,
       'beneficiary_id': beneficiaryId,
-      'source_account_id': sourceAccountId,
       'amount': amount,
+      'currency': currency,
+      'description': description,
       'status': status.name.toUpperCase(),
-      'timestamp': timestamp?.toIso8601String(),
+      'created_at': createdAt.toIso8601String(),
+      'confirmed_at': confirmedAt?.toIso8601String(),
     };
   }
 
   factory TransferModel.fromEntity(TransferEntity entity) {
     return TransferModel(
       id: entity.id,
+      userId: entity.userId,
+      fromAccountId: entity.fromAccountId,
       beneficiaryId: entity.beneficiaryId,
-      sourceAccountId: entity.sourceAccountId,
       amount: entity.amount,
+      currency: entity.currency,
+      description: entity.description,
       status: entity.status,
-      timestamp: entity.timestamp,
+      createdAt: entity.createdAt,
+      confirmedAt: entity.confirmedAt,
     );
   }
 }

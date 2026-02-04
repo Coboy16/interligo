@@ -247,9 +247,11 @@ class TransferReviewPage extends StatelessWidget {
   void _onConfirm(BuildContext context) {
     context.read<TransfersBloc>().add(
       CreateTransferRequested(
+        fromAccountId: sourceAccount.id,
         beneficiaryId: beneficiary.id,
-        sourceAccountId: sourceAccount.id,
         amount: transfer.amount,
+        currency: sourceAccount.currency,
+        description: transfer.description,
       ),
     );
   }

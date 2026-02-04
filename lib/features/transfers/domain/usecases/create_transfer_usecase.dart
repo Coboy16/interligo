@@ -10,14 +10,18 @@ class CreateTransferUseCase {
   CreateTransferUseCase(this.repository);
 
   Future<Either<Failure, TransferEntity>> call({
+    required String fromAccountId,
     required String beneficiaryId,
-    required String sourceAccountId,
     required double amount,
+    required String currency,
+    String? description,
   }) {
     return repository.createTransfer(
+      fromAccountId: fromAccountId,
       beneficiaryId: beneficiaryId,
-      sourceAccountId: sourceAccountId,
       amount: amount,
+      currency: currency,
+      description: description,
     );
   }
 }

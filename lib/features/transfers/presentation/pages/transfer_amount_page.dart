@@ -61,10 +61,12 @@ class _TransferAmountPageState extends State<TransferAmountPage> {
       // Create a temporary transfer entity for review
       final transfer = TransferEntity(
         id: '', // Will be assigned by backend
+        fromAccountId: widget.sourceAccount.id,
         beneficiaryId: widget.beneficiary.id,
-        sourceAccountId: widget.sourceAccount.id,
         amount: amount,
+        currency: widget.sourceAccount.currency,
         status: TransferStatus.pending,
+        createdAt: DateTime.now(),
       );
 
       context.push(
