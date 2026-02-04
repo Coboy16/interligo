@@ -20,6 +20,13 @@ class LoggerUtil {
     }
   }
 
+  static void warning(String message) {
+    if (kDebugMode) {
+      final timestamp = DateTime.now().toIso8601String();
+      dev.log('[$timestamp] WARNING: $message', name: 'Interligo.Warning');
+    }
+  }
+
   static String _formatData(Map<String, dynamic>? data) {
     if (data == null) return '';
     final maskedData = Map<String, dynamic>.from(data);
