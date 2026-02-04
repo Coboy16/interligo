@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../domain/usecases/check_auth_status_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
@@ -25,8 +24,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthCheckStatusRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const AuthLoading());
-
     final result = await checkAuthStatusUseCase();
 
     result.fold(
@@ -44,7 +41,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-
     final result = await loginUseCase(
       email: event.email,
       password: event.password,
@@ -61,7 +57,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const AuthLoading());
-
     final result = await logoutUseCase();
 
     result.fold(

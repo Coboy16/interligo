@@ -23,11 +23,8 @@ class TokenModel extends TokenEntity {
     };
   }
 
-  factory TokenModel.fromEntity(TokenEntity entity) {
-    return TokenModel(
-      accessToken: entity.accessToken,
-      refreshToken: entity.refreshToken,
-      expiresIn: entity.expiresIn,
-    );
+  @override
+  String toString() {
+    return 'TokenModel(accessToken: ${accessToken.substring(0, 5)}..., expiresIn: $expiresIn)';
   }
 }
